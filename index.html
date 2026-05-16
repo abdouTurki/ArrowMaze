@@ -507,19 +507,326 @@
     transition: all 0.15s ease;
   }
   .settings-btn:hover{ background:#dee1f0; }
+  .settings-btn.danger{ background:#fde2e2; color:#b91c1c; }
+  .settings-btn.danger:hover{ background:#fca5a5; color:#fff; }
+  .settings-btn.danger.armed{ background:#b91c1c; color:#fff; }
+
+  /* HUD pill buttons (coin + energy) — tappable, with hover affordance */
+  button.corner-pill{
+    font-family:inherit; cursor:pointer;
+    border:1px solid var(--line); outline:none;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  button.corner-pill:hover{ transform: translateY(-1px); box-shadow:0 4px 10px -4px rgba(26,34,56,0.2); }
+  button.corner-pill:active{ transform: scale(0.96); }
+  .corner-pill .pill-plus{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; border-radius:50%;
+    background: var(--accent); color:#fff; font-weight:900; font-size:14px;
+    margin-left:4px;
+  }
+  .corner-pill.coin .pill-plus{ background:#f59e0b; }
+  .corner-pill .energy-timer{
+    font-size:10px; font-weight:800; color: var(--dim);
+    letter-spacing:0.04em;
+    margin-right:4px;
+  }
+  .corner-pill .energy-timer.full{ color: var(--good); }
+  .coin-bump{ animation: coinBump 0.5s ease-out; }
+  @keyframes coinBump{
+    0%{ transform: scale(1); }
+    35%{ transform: scale(1.18); }
+    100%{ transform: scale(1); }
+  }
+
+  /* Daily button in the controls strip */
+  .daily-btn{
+    position:relative;
+  }
+  .daily-btn .daily-dot{
+    position:absolute; top:6px; right:6px;
+    width:10px; height:10px; border-radius:50%;
+    background: var(--bad); border:2px solid #fff;
+    display:none;
+  }
+  .daily-btn.available .daily-dot{ display:block; }
+  .daily-btn .daily-streak{
+    position:absolute; bottom:-2px; right:-4px;
+    background: var(--accent2); color:#fff;
+    border-radius:999px;
+    font-size:9px; font-weight:900;
+    padding:1px 5px;
+    min-width:14px; text-align:center;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  /* Shop modal */
+  .shop-list{
+    display:flex; flex-direction:column; gap:8px;
+    margin: 6px 0 16px;
+  }
+  .shop-item{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 14px;
+    background:#eef0f8; border-radius:12px;
+    border:2px solid transparent;
+    transition: all 0.15s ease;
+    cursor:pointer; text-align:left;
+    font-family:inherit;
+  }
+  .shop-item:not(:disabled):hover{ border-color: var(--accent); background:#fff; }
+  .shop-item:disabled{ opacity:0.5; cursor:not-allowed; }
+  .shop-item .shop-icon{
+    font-size:24px; width:36px; height:36px;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff; border-radius:10px;
+    flex-shrink:0;
+  }
+  .shop-item .shop-meta{
+    flex:1; display:flex; flex-direction:column;
+  }
+  .shop-item .shop-name{ font-weight:900; font-size:14px; color:var(--ink); }
+  .shop-item .shop-sub{ font-size:11px; color:var(--dim); font-weight:700; }
+  .shop-item .shop-price{
+    display:inline-flex; align-items:center; gap:4px;
+    background: linear-gradient(135deg, #fde68a, #f59e0b);
+    color:#7c2d12;
+    padding:6px 10px; border-radius:999px;
+    font-weight:900; font-size:13px;
+  }
+  .shop-item .shop-price::before{
+    content:''; width:10px; height:10px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #fef3c7, #b45309);
+    display:inline-block;
+  }
+  .shop-item .shop-price.cant{ background:#e5e7eb; color: var(--dim); }
+  .shop-balance{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-weight:900; font-size:13px; color: var(--dim);
+    margin-bottom:14px;
+  }
+
+  /* Out-of-something prompts (energy / hint / eraser) */
+  .modal.prompt h2{ color: var(--accent); }
+  .modal.prompt .badge{
+    background: linear-gradient(135deg, #fde68a, #f59e0b);
+    color:#7c2d12;
+  }
+  .modal .choice-list{
+    display:flex; flex-direction:column; gap:8px;
+    margin: 6px 0 12px;
+  }
+  .modal .choice{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:13px 14px;
+    border:none; border-radius:12px;
+    font-family:inherit; font-weight:900; font-size:14px;
+    cursor:pointer; transition: all 0.15s ease;
+  }
+  .modal .choice.ad{ background: linear-gradient(135deg, #22c55e, #16a34a); color:#fff; }
+  .modal .choice.ad:hover{ filter: brightness(1.08); }
+  .modal .choice.coin{ background:#eef0f8; color: var(--ink); }
+  .modal .choice.coin:hover{ background:#dee1f0; }
+  .modal .choice.coin:disabled{ opacity:0.5; cursor:not-allowed; }
+  .modal .choice .chip{
+    display:inline-flex; align-items:center; gap:5px;
+    background: rgba(255,255,255,0.22);
+    padding:4px 10px; border-radius:999px;
+    font-size:12px;
+  }
+  .modal .choice.coin .chip{
+    background: rgba(245,158,11,0.18); color:#b45309;
+  }
+  .modal .choice .chip::before{
+    content:''; width:10px; height:10px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #fef3c7, #b45309);
+  }
+  .modal .choice.ad .chip::before{ content:'▶'; font-size:10px; background:none; width:auto; }
+
+  /* Fake-ad overlay (stub) */
+  .ad-stub{
+    background:#0b0f1c; color:#fff;
+    padding:32px 24px; text-align:center;
+    max-width:340px; width:100%;
+    border-radius:18px;
+  }
+  .ad-stub .ad-tag{
+    display:inline-block;
+    background: rgba(255,255,255,0.12);
+    padding:3px 10px; border-radius:6px;
+    font-size:10px; font-weight:900; letter-spacing:0.18em;
+    margin-bottom:14px;
+  }
+  .ad-stub h3{
+    font-size:18px; margin-bottom:6px;
+  }
+  .ad-stub p{ color: rgba(255,255,255,0.7); font-size:13px; margin-bottom:18px; }
+  .ad-stub .ad-progress{
+    height:6px; background: rgba(255,255,255,0.1); border-radius:999px;
+    overflow:hidden; margin-bottom:18px;
+  }
+  .ad-stub .ad-progress-fill{
+    height:100%; background: linear-gradient(90deg, #22c55e, #fde68a);
+    width:0%; transition: width 0.1s linear;
+  }
+  .ad-stub .ad-skip{
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    border:none; font-family:inherit;
+    padding:10px 16px; border-radius:999px;
+    font-weight:800; font-size:12px; letter-spacing:0.08em;
+    cursor:pointer;
+  }
+  .ad-stub .ad-skip:disabled{ opacity:0.4; cursor:not-allowed; }
+  .ad-stub .ad-skip:not(:disabled):hover{ background: rgba(255,255,255,0.16); color:#fff; }
+
+  /* Achievements modal */
+  .ach-list{
+    display:flex; flex-direction:column; gap:8px;
+    max-height: 360px; overflow-y:auto;
+    margin: 6px 0 8px;
+    text-align:left;
+  }
+  .ach-list::-webkit-scrollbar{ width:5px; }
+  .ach-list::-webkit-scrollbar-thumb{ background: rgba(26,34,56,0.2); border-radius:999px; }
+  .ach-row{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 12px;
+    background:#eef0f8; border-radius:12px;
+  }
+  .ach-row.unlocked{ background: linear-gradient(135deg, #fef3c7, #fde68a); }
+  .ach-icon{
+    font-size:22px; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff; border-radius:10px; flex-shrink:0;
+  }
+  .ach-row.locked .ach-icon{ filter: grayscale(1); opacity:0.5; }
+  .ach-meta{ flex:1; min-width:0; }
+  .ach-name{ font-weight:900; font-size:13px; color: var(--ink); }
+  .ach-row.locked .ach-name{ color: var(--dim); }
+  .ach-desc{ font-size:11px; color: var(--dim); font-weight:700; line-height:1.4; }
+  .ach-reward{
+    font-size:11px; font-weight:900; color:#b45309;
+    background: rgba(245,158,11,0.18);
+    padding:3px 8px; border-radius:999px;
+    flex-shrink:0;
+  }
+
+  /* Achievement toast */
+  .toast-host{
+    position:fixed; top:14px; left:50%;
+    transform: translateX(-50%);
+    z-index:100; pointer-events:none;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .toast{
+    background:#1f2742; color:#fff;
+    padding:10px 14px 10px 10px;
+    border-radius:14px;
+    box-shadow: 0 18px 40px -12px rgba(0,0,0,0.4);
+    display:flex; align-items:center; gap:10px;
+    min-width: 240px; max-width: 320px;
+    pointer-events:auto;
+    animation: toastIn 0.45s cubic-bezier(.34,1.56,.64,1), toastOut 0.4s ease-in 3s forwards;
+  }
+  .toast .toast-icon{
+    width:36px; height:36px; border-radius:10px;
+    background: linear-gradient(135deg, #fde68a, #f59e0b);
+    color:#7c2d12; font-size:20px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .toast .toast-title{ font-weight:900; font-size:13px; }
+  .toast .toast-sub{ font-size:11px; color: rgba(255,255,255,0.7); font-weight:700; }
+  .toast .toast-reward{
+    margin-left:auto;
+    font-size:11px; font-weight:900;
+    color:#fde68a;
+    background: rgba(253,230,138,0.14);
+    padding:3px 8px; border-radius:999px;
+    white-space:nowrap;
+  }
+  @keyframes toastIn{
+    from{ transform: translateY(-30px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+  }
+  @keyframes toastOut{
+    to{ transform: translateY(-30px); opacity:0; }
+  }
+
+  /* Onboarding tooltip near a tool button */
+  .tip-bubble{
+    position:absolute; z-index:30;
+    background:#1f2742; color:#fff;
+    padding:10px 12px; border-radius:12px;
+    font-weight:800; font-size:12px;
+    box-shadow: 0 12px 28px -10px rgba(0,0,0,0.45);
+    max-width: 220px; line-height:1.45;
+    pointer-events:auto;
+    animation: tipIn 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .tip-bubble::after{
+    content:''; position:absolute;
+    bottom:-7px; left:24px;
+    width:0; height:0;
+    border-left:8px solid transparent; border-right:8px solid transparent;
+    border-top:8px solid #1f2742;
+  }
+  @keyframes tipIn{
+    from{ transform: translateY(8px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+  }
+
+  /* Daily-result modal flair */
+  .modal.win.daily .badge{
+    background: radial-gradient(circle at 50% 40%, #c084fc, #7c3aed 55%, #4c1d95);
+    box-shadow: 0 0 0 6px rgba(124,58,237,0.22), 0 0 50px 10px rgba(192,132,252,0.35);
+  }
+  .modal.win.daily h2{ color: #ddd6fe; }
+  .streak-row{
+    display:flex; justify-content:center; gap:6px;
+    margin: 8px 0 14px;
+  }
+  .streak-row .streak-pip{
+    width:22px; height:22px; border-radius:50%;
+    background: rgba(255,255,255,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:900; color: rgba(255,255,255,0.4);
+  }
+  .streak-row .streak-pip.lit{
+    background: linear-gradient(135deg, #fde68a, #f59e0b);
+    color:#7c2d12;
+    box-shadow: 0 0 14px rgba(253,230,138,0.5);
+  }
+
+  /* Win celebration — dots pop in a wave from board center */
+  @keyframes dotWavePop{
+    0%   { transform: scale(1);   fill: #c5cad9; }
+    35%  { transform: scale(2.8); fill: #fde68a; }
+    65%  { transform: scale(1.7); fill: #27c499; }
+    100% { transform: scale(1);   fill: #c5cad9; }
+  }
+  .board .grid-layer.win-wave circle{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: dotWavePop 0.55s cubic-bezier(.34,1.56,.64,1) both;
+    will-change: transform, fill;
+  }
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <div class="corner-pill coin">
+  <button class="corner-pill coin" id="coinPill" type="button">
     <span class="icon">●</span>
     <span id="coinCount">0</span>
-  </div>
-  <div class="corner-pill energy">
+    <span class="pill-plus">+</span>
+  </button>
+  <button class="corner-pill energy" id="energyPill" type="button">
     <span class="icon">⚡</span>
     <span id="energyCount">5</span>
-  </div>
+    <span class="energy-timer" id="energyTimer">Full</span>
+  </button>
 </div>
 
 <header>
@@ -559,6 +866,11 @@
       ✎<span class="badge zero" id="eraserBadge">1</span>
     </button>
     <button class="tool-btn" id="gridBtn" aria-label="Grid">#</button>
+    <button class="tool-btn daily-btn" id="dailyBtn" aria-label="Daily challenge">
+      ☀
+      <span class="daily-dot" id="dailyDot"></span>
+      <span class="daily-streak" id="dailyStreak" style="display:none">0</span>
+    </button>
     <button class="tool-btn" id="newBtn" aria-label="New puzzle">↻</button>
   </div>
   <div class="zooms">
@@ -643,9 +955,51 @@
         </div>
       </div>
     </div>
+    <button class="settings-btn" id="achievementsBtn">Achievements</button>
     <button class="settings-btn" id="changeDifficultyBtn">Change Difficulty</button>
+    <button class="settings-btn danger" id="resetProgressBtn">Reset Progress</button>
   </div>
 </div>
+
+<div class="overlay" id="shopOverlay">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" id="shopClose" aria-label="Close">×</button>
+    <div class="badge" style="background:linear-gradient(135deg,#fde68a,#f59e0b);color:#7c2d12;">★</div>
+    <h2>Shop</h2>
+    <div class="shop-balance"><span class="coin-stack" style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #fde68a, #f59e0b 70%, #b45309);display:inline-block;"></span>Balance: <span id="shopBalance">0</span></div>
+    <div class="shop-list" id="shopList"></div>
+  </div>
+</div>
+
+<div class="overlay" id="promptOverlay">
+  <div class="modal prompt" id="promptModal">
+    <div class="badge" id="promptIcon">⚡</div>
+    <h2 id="promptTitle">Out of energy</h2>
+    <p id="promptText">Wait for refill, watch an ad, or spend coins to keep playing.</p>
+    <div class="choice-list" id="promptChoices"></div>
+    <button class="settings-btn" id="promptCancel" style="margin-top:4px">Not now</button>
+  </div>
+</div>
+
+<div class="overlay" id="adOverlay">
+  <div class="ad-stub">
+    <div class="ad-tag">SPONSORED</div>
+    <h3 id="adTitle">Watch to earn your reward</h3>
+    <p id="adSub">This is a placeholder ad — plug your network in here.</p>
+    <div class="ad-progress"><div class="ad-progress-fill" id="adProgress"></div></div>
+    <button class="ad-skip" id="adSkip" disabled>Skip in <span id="adSkipIn">5</span>s</button>
+  </div>
+</div>
+
+<div class="overlay" id="achievementsOverlay">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" id="achievementsClose" aria-label="Close">×</button>
+    <h2 class="settings-title">Achievements</h2>
+    <div class="ach-list" id="achList"></div>
+  </div>
+</div>
+
+<div class="toast-host" id="toastHost"></div>
 
 <div class="overlay" id="overlay">
   <div class="modal" id="modal">
@@ -663,7 +1017,9 @@
     <div class="modal-reward" id="modalReward" style="display:none">
       <span class="coin-stack"></span><span>+<span id="modalRewardAmount">10</span></span>
     </div>
+    <div class="choice-list" id="modalExtras" style="display:none"></div>
     <div class="modal-buttons">
+      <button id="modalShare" class="secondary" style="display:none">Share</button>
       <button id="modalReset" class="secondary">Replay</button>
       <button id="modalNext" class="primary">Continue</button>
     </div>
@@ -1238,13 +1594,20 @@ function tileBacktrack(cellList, filled, placedCells, placed, startIdx, deadline
 }
 
 /* ---- Game state ---- */
-const STORAGE_KEY = 'arrowmaze.v6.state';   // v6: grid dots on by default
+const STORAGE_KEY = 'arrowmaze.v7.state';   // v7: meta-economy (energy/shop/daily/achievements)
+const LEGACY_KEY  = 'arrowmaze.v6.state';
 const HINTS_PER_LEVEL = 2;
 const ERASERS_PER_LEVEL = 1;
+const MAX_ENERGY = 5;
+const ENERGY_REFILL_MS = 8 * 60 * 1000;       // 8 min per energy
+const SHOP_PRICES = { hint: 25, eraser: 30, heart: 40, energy: 50 };
+const REVIVE_COST = 30;                       // mid-fail spend to keep playing
+const AD_REWARDS  = { revive: 1, doubleCoins: 2, hint: 2, eraser: 1, energy: MAX_ENERGY };
+const STREAK_BONUS = { 3: 50, 7: 200, 14: 500 };
 
 function loadPersisted(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_KEY);
     return raw ? JSON.parse(raw) : {};
   }catch{ return {}; }
 }
@@ -1253,6 +1616,8 @@ function savePersisted(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       bestScores, currentLevel, difficulty: currentDifficulty,
       settings, coins, energy, unlocks, gridOn,
+      lastEnergyAt, achievements, streak, lastDailyDate,
+      seenTips, levelsCleared, flawlessStreak, spentCoinsTotal,
       firstPlay: false,
     }));
   }catch{}
@@ -1265,10 +1630,18 @@ let currentDifficulty = _persisted.difficulty && DIFFICULTIES[_persisted.difficu
   ? _persisted.difficulty : null;
 let settings = Object.assign({ bgm: false, sfx: true, sensitivity: 50 }, _persisted.settings || {});
 let coins = _persisted.coins || 0;
-let energy = _persisted.energy != null ? _persisted.energy : 5;
+let energy = _persisted.energy != null ? _persisted.energy : MAX_ENERGY;
 let unlocks = Object.assign({ hint: false, eraser: false }, _persisted.unlocks || {});
 let gridOn = _persisted.gridOn != null ? _persisted.gridOn : true;
 let firstPlay = _persisted.firstPlay == null ? true : false;
+let lastEnergyAt = _persisted.lastEnergyAt || Date.now();
+let achievements = _persisted.achievements || {};
+let streak = _persisted.streak || 0;
+let lastDailyDate = _persisted.lastDailyDate || '';
+let seenTips = Object.assign({ hint: false, eraser: false }, _persisted.seenTips || {});
+let levelsCleared = _persisted.levelsCleared || 0;
+let flawlessStreak = _persisted.flawlessStreak || 0;
+let spentCoinsTotal = _persisted.spentCoinsTotal || 0;
 
 let pieces = [];
 let moves = 0;
@@ -1278,6 +1651,11 @@ let failTimeout = null;
 let levelToken = 0;
 let hintsLeft = HINTS_PER_LEVEL;
 let erasersLeft = ERASERS_PER_LEVEL;
+let dailyMode = false;                 // current run is the daily challenge
+let levelStartTimeMs = 0;              // for Speed Demon achievement
+let usedHintThisLevel = false;
+let revivedThisLevel = false;
+let doubledRewardThisWin = false;
 let erasing = false;
 let levelStartedAt = 0;
 let timerInterval = null;
@@ -1290,10 +1668,58 @@ const heartsEl = document.getElementById('hearts');
 const overlay = document.getElementById('overlay');
 const coinEl = document.getElementById('coinCount');
 const energyEl = document.getElementById('energyCount');
+const energyTimerEl = document.getElementById('energyTimer');
 function refreshTopBar(){
   coinEl.textContent = coins;
   energyEl.textContent = energy;
+  updateEnergyTimer();
 }
+
+/* ---- Energy: refill 1 per ENERGY_REFILL_MS, accrued across closed-app time.
+   On any read we first roll forward the clock so HUD and gates see fresh state. */
+function refillEnergyFromClock(){
+  if(energy >= MAX_ENERGY){ lastEnergyAt = Date.now(); return; }
+  const now = Date.now();
+  const gained = Math.floor((now - lastEnergyAt) / ENERGY_REFILL_MS);
+  if(gained > 0){
+    energy = Math.min(MAX_ENERGY, energy + gained);
+    lastEnergyAt = energy >= MAX_ENERGY ? now : lastEnergyAt + gained * ENERGY_REFILL_MS;
+    savePersisted();
+  }
+}
+function updateEnergyTimer(){
+  if(!energyTimerEl) return;
+  refillEnergyFromClock();
+  if(energy >= MAX_ENERGY){
+    energyTimerEl.textContent = 'Full';
+    energyTimerEl.classList.add('full');
+    return;
+  }
+  energyTimerEl.classList.remove('full');
+  const remain = Math.max(0, ENERGY_REFILL_MS - (Date.now() - lastEnergyAt));
+  const m = Math.floor(remain / 60000);
+  const s = Math.floor((remain % 60000) / 1000);
+  energyTimerEl.textContent = `+1 in ${m}:${String(s).padStart(2,'0')}`;
+}
+function spendEnergy(){
+  refillEnergyFromClock();
+  if(energy <= 0) return false;
+  const wasFull = (energy === MAX_ENERGY);
+  energy--;
+  // Start the refill clock when leaving "full" — at lower levels it's already counting.
+  if(wasFull) lastEnergyAt = Date.now();
+  savePersisted();
+  refreshTopBar();
+  return true;
+}
+function grantEnergy(n){
+  refillEnergyFromClock();
+  energy = Math.min(MAX_ENERGY, energy + n);
+  if(energy >= MAX_ENERGY) lastEnergyAt = Date.now();
+  savePersisted();
+  refreshTopBar();
+}
+setInterval(updateEnergyTimer, 1000);
 
 /* ---- Render ---- */
 function renderGrid(){
@@ -1563,6 +1989,7 @@ function loseLife(){
   if(gameOver) return;
   const idx = lives - 1;                 // the heart that's being lost
   lives = Math.max(0, lives - 1);
+  flawlessStreak = 0;
   const hs = heartsEl.querySelectorAll('.heart');
   const heartEl = hs[idx];
   if(heartEl){
@@ -1572,6 +1999,7 @@ function loseLife(){
       heartEl.classList.add('lost');
     }, 550);
   }
+  haptic(40);
   if(lives === 0){
     gameOver = true;                     // block further input immediately
     stopTimer();
@@ -1659,10 +2087,12 @@ function playTone(freq, durMs = 110, type = 'sine', vol = 0.12){
 function sfxRelease(){
   // Try the loaded arrow sample (forward or reversed, random pick).
   // Fall back to a quick synth blip if the file hasn't decoded yet.
+  if(typeof haptic === 'function') haptic(8);
   if(playArrowBuffer()) return;
   playTone(720, 90, 'sine', 0.10);
 }
 function sfxBad(){
+  if(typeof haptic === 'function') haptic(30);
   playTone(220, 80, 'square', 0.08);
   setTimeout(() => playTone(180, 120, 'square', 0.07), 70);
 }
@@ -1716,18 +2146,96 @@ function checkWin(){
     stopTimer();
     const par = pieces.length;
     const wrong = moves - par;
+    const flawless = wrong === 0;
     const key = bestKey();
     const prev = bestScores[key];
     const isNewBest = prev == null || moves < prev;
     if(isNewBest) bestScores[key] = moves;
     // Coin reward: +10 base, +5 perfect-run bonus.
-    const reward = 10 + (wrong === 0 ? 5 : 0);
+    const reward = 10 + (flawless ? 5 : 0);
     coins += reward;
+    levelsCleared++;
+    flawlessStreak = flawless ? flawlessStreak + 1 : 0;
+    const durationMs = levelStartTimeMs ? (Date.now() - levelStartTimeMs) : 0;
+    // Daily completion: bump streak (or break it if a day was skipped).
+    if(dailyMode){
+      const today = todayKey();
+      if(lastDailyDate){
+        const last = new Date(lastDailyDate);
+        const t = new Date(today);
+        const diffDays = Math.round((t - last) / (24*60*60*1000));
+        streak = diffDays === 1 ? streak + 1 : 1;
+      } else {
+        streak = 1;
+      }
+      lastDailyDate = today;
+      // Streak bonus on milestone days.
+      const bonus = STREAK_BONUS[streak];
+      if(bonus){
+        coins += bonus;
+        showToast({ title: streak + '-day streak!', sub:'Bonus reward', reward: bonus, icon:'☀' });
+      }
+    }
     refreshTopBar();
+    bumpCoinPill();
     sfxWin();
+    haptic([20, 40, 60, 40, 80]);
     savePersisted();
-    setTimeout(() => showWinModal(isNewBest, reward), 400);
+    playWinWave();
+    checkAchievements({ won:true, flawless, durationMs, usedHint: usedHintThisLevel });
+    setTimeout(() => showWinModal(isNewBest, reward), 900);
   }
+}
+/* Wave celebration: dots pop outward from board center; two glow rings
+   expand over the same window. Triggered the instant the last piece exits. */
+function playWinWave(){
+  const dots = Array.from(boardEl.querySelectorAll('.grid-layer circle'));
+  const cx = VIEW_W / 2;
+  const cy = VIEW_H / 2;
+  if(dots.length){
+    let maxD = 0;
+    const dist = dots.map(dot => {
+      const dx = parseFloat(dot.getAttribute('cx')) - cx;
+      const dy = parseFloat(dot.getAttribute('cy')) - cy;
+      const d = Math.hypot(dx, dy);
+      if(d > maxD) maxD = d;
+      return d;
+    });
+    const WAVE_MS = 360;
+    dots.forEach((dot, i) => {
+      dot.style.animationDelay = `${maxD === 0 ? 0 : (dist[i] / maxD) * WAVE_MS}ms`;
+    });
+    const gridLayer = boardEl.querySelector('.grid-layer');
+    if(gridLayer) gridLayer.classList.add('win-wave');
+  }
+  const rMax = Math.hypot(VIEW_W, VIEW_H) / 2 + 40;
+  spawnWinRing(cx, cy, rMax, '#fde68a', 0,   720);
+  spawnWinRing(cx, cy, rMax, '#5a6cff', 120, 820);
+}
+function spawnWinRing(cx, cy, rMax, color, delayMs, durMs){
+  setTimeout(() => {
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ring.setAttribute('cx', cx);
+    ring.setAttribute('cy', cy);
+    ring.setAttribute('r', 0);
+    ring.setAttribute('fill', 'none');
+    ring.setAttribute('stroke', color);
+    ring.setAttribute('stroke-width', 7);
+    ring.setAttribute('opacity', 0.55);
+    ring.style.pointerEvents = 'none';
+    boardEl.appendChild(ring);
+    let start = 0;
+    requestAnimationFrame(function step(t){
+      if(!start) start = t;
+      const k = Math.min(1, (t - start) / durMs);
+      const ease = 1 - Math.pow(1 - k, 3);
+      ring.setAttribute('r', rMax * ease);
+      ring.setAttribute('opacity', (1 - k) * 0.55);
+      ring.setAttribute('stroke-width', 7 * (1 - k * 0.75));
+      if(k < 1) requestAnimationFrame(step);
+      else ring.remove();
+    });
+  }, delayMs);
 }
 const CONFETTI_COLORS = ['#22c55e','#f59e0b','#5a6cff','#ff5b8a','#fde68a','#27c499','#ff5b5b'];
 function spawnConfetti(host){
@@ -1746,11 +2254,12 @@ function showWinModal(isNewBest, reward){
   const modal = document.getElementById('modal');
   modal.classList.remove('fail');
   modal.classList.add('win');
-  document.getElementById('modalBadge').textContent = '😄';
+  modal.classList.toggle('daily', dailyMode);
+  document.getElementById('modalBadge').textContent = dailyMode ? '☀' : '😄';
   document.getElementById('modalLevelLabel').style.display = '';
-  document.getElementById('modalLevelLabel').textContent = `Level ${currentLevel}`;
-  document.getElementById('modalTitle').textContent = 'COMPLETED!';
-  document.getElementById('modalNewBest').style.display = isNewBest ? 'inline-block' : 'none';
+  document.getElementById('modalLevelLabel').textContent = dailyMode ? 'Daily Challenge' : `Level ${currentLevel}`;
+  document.getElementById('modalTitle').textContent = dailyMode ? 'DAILY CLEARED!' : 'COMPLETED!';
+  document.getElementById('modalNewBest').style.display = isNewBest && !dailyMode ? 'inline-block' : 'none';
   const par = pieces.length;
   const wrong = moves - par;
   document.getElementById('modalText').textContent =
@@ -1765,14 +2274,53 @@ function showWinModal(isNewBest, reward){
   } else {
     document.getElementById('modalReward').style.display = 'none';
   }
-  document.getElementById('modalNext').textContent = 'Continue';
+  // Extras: offer 2× coins via ad once per win (skip if already doubled).
+  const extras = document.getElementById('modalExtras');
+  extras.innerHTML = '';
+  if(reward > 0 && !doubledRewardThisWin){
+    const btn = document.createElement('button');
+    btn.className = 'choice ad';
+    btn.innerHTML = `<span>Double your reward</span><span class="chip">+${reward}</span>`;
+    btn.addEventListener('click', () => {
+      showRewardedAd('Watch to double your reward', () => {
+        coins += reward;
+        doubledRewardThisWin = true;
+        savePersisted();
+        refreshTopBar();
+        bumpCoinPill();
+        sfxCoin();
+        showToast({ title:'Doubled!', icon:'💰', reward: reward });
+        btn.remove();
+      });
+    });
+    extras.appendChild(btn);
+    extras.style.display = '';
+  } else {
+    extras.style.display = 'none';
+  }
+  // Streak pips for daily wins
+  if(dailyMode){
+    const row = document.createElement('div');
+    row.className = 'streak-row';
+    for(let i = 1; i <= 7; i++){
+      const pip = document.createElement('div');
+      pip.className = 'streak-pip' + (i <= streak ? ' lit' : '');
+      pip.textContent = i;
+      row.appendChild(pip);
+    }
+    extras.appendChild(row);
+    extras.style.display = '';
+  }
+  document.getElementById('modalNext').textContent = dailyMode ? 'Back to game' : 'Continue';
+  document.getElementById('modalShare').style.display = '';
   spawnConfetti(document.getElementById('modalConfetti'));
   overlay.classList.add('show');
 }
 function showFailModal(){
   sfxFail();
+  haptic([60, 40, 60]);
   const modal = document.getElementById('modal');
-  modal.classList.remove('win');
+  modal.classList.remove('win', 'daily');
   modal.classList.add('fail');
   document.getElementById('modalBadge').textContent = '✕';
   document.getElementById('modalLevelLabel').style.display = 'none';
@@ -1783,9 +2331,49 @@ function showFailModal(){
   document.getElementById('modalMoves').textContent = moves;
   document.getElementById('modalPar').textContent = pieces.length;
   document.getElementById('modalLives').textContent = 0;
+  // Revive: offered once per fail. Watch ad OR spend coins to restore lives.
+  const extras = document.getElementById('modalExtras');
+  extras.innerHTML = '';
+  if(!revivedThisLevel){
+    const piecesLeft = pieces.filter(p => !p.gone).length;
+    const adBtn = document.createElement('button');
+    adBtn.className = 'choice ad';
+    adBtn.innerHTML = `<span>Revive — keep playing</span><span class="chip">Watch ad</span>`;
+    adBtn.addEventListener('click', () => {
+      showRewardedAd('Revive with full lives', () => revivePlayer());
+    });
+    extras.appendChild(adBtn);
+    const canAfford = coins >= REVIVE_COST;
+    const coinBtn = document.createElement('button');
+    coinBtn.className = 'choice coin';
+    coinBtn.disabled = !canAfford;
+    coinBtn.innerHTML = `<span>Revive with coins</span><span class="chip">${REVIVE_COST}</span>`;
+    coinBtn.addEventListener('click', () => {
+      if(!canAfford) return;
+      coins -= REVIVE_COST; spentCoinsTotal += REVIVE_COST;
+      savePersisted(); refreshTopBar(); sfxCoin(); bumpCoinPill();
+      revivePlayer();
+    });
+    extras.appendChild(coinBtn);
+    extras.style.display = '';
+    void piecesLeft;
+  } else {
+    extras.style.display = 'none';
+  }
+  document.getElementById('modalShare').style.display = 'none';
   document.getElementById('modalNext').textContent = 'Try again';
   document.getElementById('modalConfetti').innerHTML = '';
   overlay.classList.add('show');
+}
+function revivePlayer(){
+  revivedThisLevel = true;
+  lives = 3;
+  gameOver = false;
+  renderHearts();
+  overlay.classList.remove('show');
+  // Resume the same board state with a fresh life pool and restart the timer.
+  startTimer();
+  showToast({ title:'Revived!', icon:'♥' });
 }
 function updateHintBtn(){
   const btn = document.getElementById('hintBtn');
@@ -1799,14 +2387,42 @@ function updateHintBtn(){
   btn.classList.remove('locked');
   badge.textContent = hintsLeft;
   badge.classList.toggle('zero', hintsLeft <= 0);
-  btn.disabled = hintsLeft <= 0 || gameOver;
+  // Keep enabled at 0 so the "out of hints" prompt can fire.
+  btn.disabled = gameOver;
 }
 function hint(){
-  if(gameOver || hintsLeft <= 0) return;
+  if(gameOver) return;
+  if(hintsLeft <= 0){
+    // Offer ad or coin spend instead of just silently no-op'ing.
+    showPrompt({
+      title:'Out of hints',
+      text:'Watch an ad or spend coins to get more hints.',
+      icon:'🔍',
+      choices: [
+        { kind:'ad', label:'Watch an ad', cost:'+'+AD_REWARDS.hint, onPick:() => {
+          showRewardedAd('Get '+AD_REWARDS.hint+' hints', () => {
+            hintsLeft += AD_REWARDS.hint;
+            updateHintBtn();
+            showToast({ title:'Hints added', icon:'🔍', reward: AD_REWARDS.hint });
+          });
+        }},
+        { kind:'coin', label:'+1 hint', cost: SHOP_PRICES.hint, disabled: coins < SHOP_PRICES.hint, onPick:() => {
+          if(coins < SHOP_PRICES.hint) return;
+          coins -= SHOP_PRICES.hint; spentCoinsTotal += SHOP_PRICES.hint;
+          hintsLeft++;
+          savePersisted(); refreshTopBar(); sfxCoin(); bumpCoinPill();
+          updateHintBtn();
+        }},
+      ],
+    });
+    return;
+  }
   const movable = pieces.find(p => !p.gone && pathIsClear(p));
   if(!movable) return;
   sfxHint();
+  haptic(15);
   hintsLeft--;
+  usedHintThisLevel = true;
   updateHintBtn();
   movable.el.classList.add('hint');
   setTimeout(() => movable.el.classList.remove('hint'), 1100);
@@ -1823,11 +2439,36 @@ function updateEraserBtn(){
   btn.classList.remove('locked');
   badge.textContent = erasersLeft;
   badge.classList.toggle('zero', erasersLeft <= 0);
-  btn.disabled = erasersLeft <= 0 || gameOver;
+  // Keep enabled at 0 so the "out of erasers" prompt can fire.
+  btn.disabled = gameOver;
   btn.classList.toggle('active', erasing);
 }
 function toggleEraser(){
-  if(gameOver || erasersLeft <= 0) return;
+  if(gameOver) return;
+  if(erasersLeft <= 0){
+    showPrompt({
+      title:'Out of erasers',
+      text:'Watch an ad or spend coins to get more erasers.',
+      icon:'✎',
+      choices: [
+        { kind:'ad', label:'Watch an ad', cost:'+'+AD_REWARDS.eraser, onPick:() => {
+          showRewardedAd('Get '+AD_REWARDS.eraser+' eraser', () => {
+            erasersLeft += AD_REWARDS.eraser;
+            updateEraserBtn();
+            showToast({ title:'Eraser added', icon:'✎', reward: AD_REWARDS.eraser });
+          });
+        }},
+        { kind:'coin', label:'+1 eraser', cost: SHOP_PRICES.eraser, disabled: coins < SHOP_PRICES.eraser, onPick:() => {
+          if(coins < SHOP_PRICES.eraser) return;
+          coins -= SHOP_PRICES.eraser; spentCoinsTotal += SHOP_PRICES.eraser;
+          erasersLeft++;
+          savePersisted(); refreshTopBar(); sfxCoin(); bumpCoinPill();
+          updateEraserBtn();
+        }},
+      ],
+    });
+    return;
+  }
   erasing = !erasing;
   updateEraserBtn();
 }
@@ -1861,7 +2502,7 @@ function applyZoom(){
    tiling gets re-randomized each call. */
 function loadLevel(level, reuseShape = false){
   if(level < 1) level = 1;
-  currentLevel = level;
+  if(!dailyMode) currentLevel = level;
   levelToken++;                          // invalidate any in-flight animations
   if(failTimeout){ clearTimeout(failTimeout); failTimeout = null; }
   pieces = [];
@@ -1871,6 +2512,10 @@ function loadLevel(level, reuseShape = false){
   hintsLeft = HINTS_PER_LEVEL;
   erasersLeft = ERASERS_PER_LEVEL;
   erasing = false;
+  usedHintThisLevel = false;
+  revivedThisLevel = false;
+  doubledRewardThisWin = false;
+  levelStartTimeMs = Date.now();
   renderHearts();
   updateHintBtn();
   updateEraserBtn();
@@ -1904,11 +2549,14 @@ function loadLevel(level, reuseShape = false){
       id: i, cells: p.cells, tip: p.tip, dir: p.dir, gone: false, el: null,
     }));
 
-    levelEl.textContent = String(level);
+    levelEl.textContent = dailyMode ? '☀' : String(level);
     savePersisted();
     renderPieces();
     updateHUD();
     startTimer();
+    // First-time use tooltips after a brief settle, once the feature button is enabled.
+    if(unlocks.hint && !seenTips.hint) setTimeout(() => maybeShowToolTip('hint'), 1400);
+    else if(unlocks.eraser && !seenTips.eraser) setTimeout(() => maybeShowToolTip('eraser'), 1400);
   }, 16);
 }
 
@@ -1942,9 +2590,10 @@ function chooseDifficulty(diffKey){
   const d = DIFFICULTIES[diffKey];
   applyGridSize(d.w, d.h);
   hideDiffModal();
+  dailyMode = false;
   // If switching difficulty, restart from level 1; if the player just
   // re-confirmed the same difficulty, keep their level.
-  loadLevel(isSame ? currentLevel : 1, false);
+  tryStartLevel(isSame ? currentLevel : 1, false);
 }
 
 document.querySelectorAll('.diff-btn').forEach(b => {
@@ -1995,16 +2644,35 @@ document.getElementById('diffBtn').addEventListener('click', showSettings);
 document.getElementById('hintBtn').addEventListener('click', hint);
 document.getElementById('eraserBtn').addEventListener('click', toggleEraser);
 document.getElementById('gridBtn').addEventListener('click', toggleGrid);
-document.getElementById('newBtn').addEventListener('click', () => loadLevel(currentLevel + 1, false));
+document.getElementById('newBtn').addEventListener('click', () => {
+  dailyMode = false;
+  tryStartLevel(currentLevel + 1, false);
+});
 document.getElementById('zoomInBtn').addEventListener('click', () => { zoom = Math.min(2, zoom + 0.15); applyZoom(); });
 document.getElementById('zoomOutBtn').addEventListener('click', () => { zoom = Math.max(0.6, zoom - 0.15); applyZoom(); });
+function retryDaily(){
+  // Free re-attempt of today's daily — same seed, no energy charge.
+  const realRandom = Math.random;
+  Math.random = mulberry32(dailySeed());
+  loadLevel(currentLevel, true);
+  setTimeout(() => { Math.random = realRandom; }, 80);
+}
 document.getElementById('modalReset').addEventListener('click', () => {
   overlay.classList.remove('show');
-  loadLevel(currentLevel, true);
+  if(dailyMode){ retryDaily(); return; }
+  tryStartLevel(currentLevel, true);
 });
 document.getElementById('modalNext').addEventListener('click', () => {
   overlay.classList.remove('show');
-  if(lives === 0){ loadLevel(currentLevel, true); return; }
+  // Daily clear → exit daily mode back to regular play (no energy charge).
+  if(dailyMode && lives > 0){
+    exitDailyMode();
+    return;
+  }
+  if(lives === 0){
+    if(dailyMode){ retryDaily(); return; }
+    tryStartLevel(currentLevel, true); return;
+  }
   // Win path — first-time feature unlocks before advancing.
   if(currentLevel === 1 && !unlocks.hint){
     showUnlockModal('hint'); return;
@@ -2012,7 +2680,7 @@ document.getElementById('modalNext').addEventListener('click', () => {
   if(currentLevel === 2 && !unlocks.eraser){
     showUnlockModal('eraser'); return;
   }
-  loadLevel(currentLevel + 1, false);
+  tryStartLevel(currentLevel + 1, false);
 });
 
 /* --- Unlock modal --- */
@@ -2037,11 +2705,428 @@ function showUnlockModal(kind){
     else                unlocks.eraser = true;
     savePersisted();
     unlockOverlay.classList.remove('show');
-    loadLevel(currentLevel + 1, false);
+    tryStartLevel(currentLevel + 1, false);
   };
 }
 
+/* =================================================================
+   Meta-game features: haptics, toasts, achievements, shop, ads,
+   daily challenge, pause-on-blur, share, tooltips, reset.
+   ================================================================= */
+
+function haptic(pattern){
+  if(!settings.sfx) return;
+  if(navigator.vibrate) navigator.vibrate(pattern);
+}
+
+function showToast(opts){
+  const host = document.getElementById('toastHost');
+  if(!host) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  const icon = opts.icon || '★';
+  const sub = opts.sub ? `<div class="toast-sub">${opts.sub}</div>` : '';
+  const reward = opts.reward ? `<div class="toast-reward">+${opts.reward}</div>` : '';
+  el.innerHTML = `<div class="toast-icon">${icon}</div><div><div class="toast-title">${opts.title}</div>${sub}</div>${reward}`;
+  host.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+
+const ACHIEVEMENTS = [
+  { id:'firstWin',  icon:'🎯', name:'First Steps',    desc:'Clear your first level.',         reward:10 },
+  { id:'flawless',  icon:'✨', name:'Flawless',       desc:'Clear a level with no wrong moves.', reward:20 },
+  { id:'flawless3', icon:'🔥', name:'On Fire',        desc:'3 flawless wins in a row.',       reward:50 },
+  { id:'speedDemon',icon:'⚡', name:'Speed Demon',    desc:'Clear a level under 30 seconds.', reward:30 },
+  { id:'noHints',   icon:'🧠', name:'Pure Mind',      desc:'Clear a level without using a hint.', reward:15 },
+  { id:'level10',   icon:'🥉', name:'Level 10',       desc:'Reach level 10.',                 reward:50 },
+  { id:'level25',   icon:'🥈', name:'Level 25',       desc:'Reach level 25.',                 reward:100 },
+  { id:'level50',   icon:'🥇', name:'Level 50',       desc:'Reach level 50.',                 reward:200 },
+  { id:'centurion', icon:'💯', name:'Centurion',      desc:'Clear 100 levels total.',         reward:500 },
+  { id:'streak3',   icon:'☀',  name:'Three in a Row', desc:'3-day daily streak.',             reward:50 },
+  { id:'streak7',   icon:'🌟', name:'Week Warrior',   desc:'7-day daily streak.',             reward:200 },
+  { id:'bigSpender',icon:'💰', name:'Big Spender',    desc:'Spend 100+ coins.',               reward:25 },
+];
+function unlockAchievement(id){
+  if(achievements[id]) return;
+  const def = ACHIEVEMENTS.find(a => a.id === id);
+  if(!def) return;
+  achievements[id] = { unlockedAt: Date.now() };
+  coins += def.reward;
+  savePersisted();
+  refreshTopBar();
+  bumpCoinPill();
+  showToast({ title: def.name, sub:'Achievement unlocked', reward: def.reward, icon: def.icon });
+  haptic([10, 40, 80]);
+}
+function checkAchievements(ctx){
+  if(ctx && ctx.won){
+    unlockAchievement('firstWin');
+    if(ctx.flawless) unlockAchievement('flawless');
+    if(flawlessStreak >= 3) unlockAchievement('flawless3');
+    if(ctx.durationMs > 0 && ctx.durationMs < 30000) unlockAchievement('speedDemon');
+    if(!ctx.usedHint) unlockAchievement('noHints');
+    if(levelsCleared >= 100) unlockAchievement('centurion');
+  }
+  if(currentLevel >= 10) unlockAchievement('level10');
+  if(currentLevel >= 25) unlockAchievement('level25');
+  if(currentLevel >= 50) unlockAchievement('level50');
+  if(streak >= 3) unlockAchievement('streak3');
+  if(streak >= 7) unlockAchievement('streak7');
+  if(spentCoinsTotal >= 100) unlockAchievement('bigSpender');
+}
+function renderAchievementsList(){
+  const list = document.getElementById('achList');
+  if(!list) return;
+  list.innerHTML = '';
+  ACHIEVEMENTS.forEach(def => {
+    const unlocked = !!achievements[def.id];
+    const row = document.createElement('div');
+    row.className = 'ach-row ' + (unlocked ? 'unlocked' : 'locked');
+    row.innerHTML = `
+      <div class="ach-icon">${def.icon}</div>
+      <div class="ach-meta">
+        <div class="ach-name">${def.name}</div>
+        <div class="ach-desc">${def.desc}</div>
+      </div>
+      <div class="ach-reward">+${def.reward}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function bumpCoinPill(){
+  const pill = document.getElementById('coinPill');
+  if(!pill) return;
+  pill.classList.remove('coin-bump');
+  void pill.offsetWidth;
+  pill.classList.add('coin-bump');
+}
+
+/* ---- Coin shop ---- */
+const shopOverlay = document.getElementById('shopOverlay');
+function openShop(){
+  refillEnergyFromClock();
+  document.getElementById('shopBalance').textContent = coins;
+  renderShop();
+  shopOverlay.classList.add('show');
+}
+function closeShop(){ shopOverlay.classList.remove('show'); }
+function renderShop(){
+  const list = document.getElementById('shopList');
+  list.innerHTML = '';
+  const playing = !gameOver && pieces.length > 0;
+  const items = [
+    { id:'hint',   icon:'🔍', name:'+1 Hint',       sub:'Highlight a movable arrow',  price:SHOP_PRICES.hint,   available: unlocks.hint && playing,                apply:() => { hintsLeft++; updateHintBtn(); } },
+    { id:'eraser', icon:'✎',  name:'+1 Eraser',     sub:'Remove an arrow for free',   price:SHOP_PRICES.eraser, available: unlocks.eraser && playing,              apply:() => { erasersLeft++; updateEraserBtn(); } },
+    { id:'heart',  icon:'♥',  name:'+1 Heart',      sub:'Restore a life this run',    price:SHOP_PRICES.heart,  available: playing && lives < 3,                   apply:() => addHeart() },
+    { id:'energy', icon:'⚡', name:'Refill Energy', sub:`Fill back to ${MAX_ENERGY}`, price:SHOP_PRICES.energy, available: energy < MAX_ENERGY,                    apply:() => grantEnergy(MAX_ENERGY) },
+  ];
+  items.forEach(item => {
+    const can = item.available && coins >= item.price;
+    const btn = document.createElement('button');
+    btn.className = 'shop-item';
+    btn.disabled = !item.available || !can;
+    btn.innerHTML = `
+      <div class="shop-icon">${item.icon}</div>
+      <div class="shop-meta">
+        <div class="shop-name">${item.name}</div>
+        <div class="shop-sub">${item.sub}</div>
+      </div>
+      <div class="shop-price ${can ? '' : 'cant'}">${item.price}</div>
+    `;
+    btn.addEventListener('click', () => {
+      if(!can) return;
+      coins -= item.price;
+      spentCoinsTotal += item.price;
+      item.apply();
+      savePersisted();
+      refreshTopBar();
+      bumpCoinPill();
+      sfxCoin();
+      haptic(15);
+      document.getElementById('shopBalance').textContent = coins;
+      renderShop();
+      checkAchievements({});
+    });
+    list.appendChild(btn);
+  });
+}
+function addHeart(){
+  if(lives >= 3) return;
+  lives++;
+  renderHearts();
+  const hs = heartsEl.querySelectorAll('.heart');
+  const h = hs[lives - 1];
+  if(h){ h.classList.add('losing'); setTimeout(() => h.classList.remove('losing'), 350); }
+}
+
+/* ---- Generic "out of X" prompt with ad + coin choices ---- */
+const promptOverlay = document.getElementById('promptOverlay');
+function showPrompt(opts){
+  document.getElementById('promptTitle').textContent = opts.title;
+  document.getElementById('promptText').textContent  = opts.text;
+  document.getElementById('promptIcon').textContent  = opts.icon || '⚡';
+  const list = document.getElementById('promptChoices');
+  list.innerHTML = '';
+  opts.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice ' + (c.kind || 'coin');
+    btn.disabled  = !!c.disabled;
+    btn.innerHTML = `<span>${c.label}</span><span class="chip">${c.cost}</span>`;
+    btn.addEventListener('click', () => {
+      promptOverlay.classList.remove('show');
+      c.onPick();
+    });
+    list.appendChild(btn);
+  });
+  document.getElementById('promptCancel').onclick = () => {
+    promptOverlay.classList.remove('show');
+    if(opts.onCancel) opts.onCancel();
+  };
+  promptOverlay.classList.add('show');
+}
+
+/* ---- Rewarded ad stub.
+   To plug a real network: replace the body of showRewardedAd() with the
+   SDK's "show rewarded video" call, and invoke onReward() in its
+   onComplete callback. */
+const adOverlay = document.getElementById('adOverlay');
+let adInterval = null;
+function showRewardedAd(label, onReward){
+  document.getElementById('adTitle').textContent = label || 'Watch to earn your reward';
+  document.getElementById('adSub').textContent   = 'Placeholder ad — plug your network SDK in here.';
+  const fill = document.getElementById('adProgress');
+  const skipBtn = document.getElementById('adSkip');
+  fill.style.width = '0%';
+  skipBtn.disabled = true;
+  skipBtn.innerHTML = 'Skip in <span id="adSkipIn">5</span>s';
+  skipBtn.onclick = null;
+  adOverlay.classList.add('show');
+  const started = Date.now();
+  const DUR = 5000;
+  if(adInterval) clearInterval(adInterval);
+  adInterval = setInterval(() => {
+    const elapsed = Date.now() - started;
+    const k = Math.min(1, elapsed / DUR);
+    fill.style.width = (k * 100) + '%';
+    const countEl = document.getElementById('adSkipIn');
+    if(countEl) countEl.textContent = Math.max(0, Math.ceil((DUR - elapsed) / 1000));
+    if(k >= 1){
+      clearInterval(adInterval); adInterval = null;
+      skipBtn.disabled = false;
+      skipBtn.textContent = 'Claim reward';
+      skipBtn.onclick = () => {
+        adOverlay.classList.remove('show');
+        skipBtn.onclick = null;
+        if(onReward) onReward();
+      };
+    }
+  }, 100);
+}
+
+/* ---- Energy gate (use instead of loadLevel for player-initiated plays) ---- */
+function tryStartLevel(level, reuseShape){
+  refillEnergyFromClock();
+  if(energy <= 0){
+    showOutOfEnergyPrompt(() => tryStartLevel(level, reuseShape));
+    return false;
+  }
+  spendEnergy();
+  loadLevel(level, reuseShape);
+  return true;
+}
+function showOutOfEnergyPrompt(retry){
+  showPrompt({
+    title:'Out of energy',
+    text:'Wait for the refill timer, watch an ad, or spend coins to keep playing.',
+    icon:'⚡',
+    choices: [
+      { kind:'ad', label:'Watch an ad', cost:'+'+AD_REWARDS.energy, onPick:() => {
+        showRewardedAd('Get '+AD_REWARDS.energy+' energy', () => {
+          grantEnergy(AD_REWARDS.energy);
+          showToast({ title:'Energy refilled', icon:'⚡', reward:AD_REWARDS.energy });
+          if(retry) retry();
+        });
+      }},
+      { kind:'coin', label:'Refill from coins', cost: SHOP_PRICES.energy, disabled: coins < SHOP_PRICES.energy, onPick:() => {
+        if(coins < SHOP_PRICES.energy) return;
+        coins -= SHOP_PRICES.energy; spentCoinsTotal += SHOP_PRICES.energy;
+        grantEnergy(MAX_ENERGY);
+        savePersisted(); refreshTopBar(); sfxCoin(); bumpCoinPill();
+        if(retry) retry();
+      }},
+    ],
+  });
+}
+
+/* ---- Daily challenge ---- */
+function dailySeed(){
+  const key = todayKey();
+  let h = 2166136261 >>> 0;
+  for(let i = 0; i < key.length; i++){
+    h = Math.imul(h ^ key.charCodeAt(i), 16777619);
+  }
+  return h >>> 0;
+}
+function mulberry32(seed){
+  return function(){
+    let t = (seed += 0x6D2B79F5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function dailyAvailable(){ return lastDailyDate !== todayKey(); }
+let _savedDifficulty = null;
+function startDailyChallenge(){
+  if(!dailyAvailable()){
+    showToast({ title:"Today's daily is done!", sub:'Come back tomorrow.', icon:'☀' });
+    return;
+  }
+  refillEnergyFromClock();
+  if(energy <= 0){
+    showOutOfEnergyPrompt(startDailyChallenge);
+    return;
+  }
+  spendEnergy();
+  dailyMode = true;
+  _savedDifficulty = currentDifficulty;
+  const d = DIFFICULTIES.medium;
+  applyGridSize(d.w, d.h);
+  // Seed the tiler for today's puzzle. Restore Math.random after a short
+  // delay because loadLevel runs its work in setTimeout(16).
+  const realRandom = Math.random;
+  Math.random = mulberry32(dailySeed());
+  loadLevel(1, false);
+  setTimeout(() => { Math.random = realRandom; }, 80);
+  updateDailyBadge();
+}
+function exitDailyMode(){
+  dailyMode = false;
+  if(_savedDifficulty && DIFFICULTIES[_savedDifficulty]){
+    const d = DIFFICULTIES[_savedDifficulty];
+    if(_savedDifficulty !== currentDifficulty){
+      currentDifficulty = _savedDifficulty;
+      applyGridSize(d.w, d.h);
+    }
+  }
+  updateDailyBadge();
+  // Free re-load back to the player's normal level — they already paid energy entering daily.
+  loadLevel(currentLevel, false);
+}
+function updateDailyBadge(){
+  const btn = document.getElementById('dailyBtn');
+  const streakEl = document.getElementById('dailyStreak');
+  if(!btn) return;
+  btn.classList.toggle('available', dailyAvailable() && !dailyMode);
+  if(streak > 0){
+    streakEl.style.display = 'inline-block';
+    streakEl.textContent = streak;
+  } else {
+    streakEl.style.display = 'none';
+  }
+}
+
+/* ---- Pause on blur ---- */
+let pausedAt = 0;
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){
+    if(timerInterval){ pausedAt = Date.now(); stopTimer(); }
+  } else if(pausedAt && !gameOver && levelStartedAt){
+    levelStartedAt += Date.now() - pausedAt;
+    pausedAt = 0;
+    timerInterval = setInterval(tickTimer, 1000);
+  }
+});
+
+/* ---- Share on win ---- */
+async function shareWin(){
+  const wrong = moves - pieces.length;
+  const flair = wrong === 0 ? ' with a flawless run' : '';
+  const what = dailyMode ? "today's daily" : `level ${currentLevel}`;
+  const text = `I just cleared ${what} in UNJAM${flair}! 🎯`;
+  try {
+    if(navigator.share){
+      await navigator.share({ title:'UNJAM — Arrow Tangle', text });
+    } else if(navigator.clipboard){
+      await navigator.clipboard.writeText(text);
+      showToast({ title:'Copied to clipboard', icon:'✓' });
+    }
+  } catch{}
+}
+
+/* ---- Onboarding tooltip near a tool button ---- */
+function maybeShowToolTip(kind){
+  if(seenTips[kind]) return;
+  const btn = document.getElementById(kind + 'Btn');
+  if(!btn || btn.disabled) return;
+  document.querySelectorAll('.tip-bubble').forEach(b => b.remove());
+  const tip = document.createElement('div');
+  tip.className = 'tip-bubble';
+  tip.textContent = kind === 'hint'
+    ? 'Tap to highlight an arrow that can exit safely.'
+    : 'Tap, then choose an arrow to remove it for free.';
+  document.body.appendChild(tip);
+  const r = btn.getBoundingClientRect();
+  tip.style.left = (r.left + window.scrollX - 24) + 'px';
+  tip.style.top  = (r.top  + window.scrollY - tip.offsetHeight - 12) + 'px';
+  const dismiss = () => {
+    seenTips[kind] = true; savePersisted();
+    tip.remove();
+    document.removeEventListener('click', dismiss, true);
+  };
+  setTimeout(() => document.addEventListener('click', dismiss, true), 50);
+  setTimeout(dismiss, 6000);
+}
+
+/* ---- Reset progress (two-step) ---- */
+let _resetArmed = false;
+function handleResetProgress(){
+  const btn = document.getElementById('resetProgressBtn');
+  if(!_resetArmed){
+    _resetArmed = true;
+    btn.classList.add('armed');
+    btn.textContent = 'Tap again to confirm';
+    setTimeout(() => {
+      _resetArmed = false;
+      btn.classList.remove('armed');
+      btn.textContent = 'Reset Progress';
+    }, 4000);
+    return;
+  }
+  try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(LEGACY_KEY); } catch{}
+  location.reload();
+}
+
+/* ---- Wire up handlers ---- */
+document.getElementById('coinPill').addEventListener('click', openShop);
+document.getElementById('energyPill').addEventListener('click', () => {
+  if(energy < MAX_ENERGY) showOutOfEnergyPrompt(null);
+  else openShop();
+});
+document.getElementById('shopClose').addEventListener('click', closeShop);
+shopOverlay.addEventListener('click', (e) => { if(e.target === shopOverlay) closeShop(); });
+document.getElementById('dailyBtn').addEventListener('click', startDailyChallenge);
+document.getElementById('achievementsBtn').addEventListener('click', () => {
+  renderAchievementsList();
+  document.getElementById('achievementsOverlay').classList.add('show');
+});
+document.getElementById('achievementsClose').addEventListener('click', () => {
+  document.getElementById('achievementsOverlay').classList.remove('show');
+});
+document.getElementById('achievementsOverlay').addEventListener('click', (e) => {
+  if(e.target.id === 'achievementsOverlay') e.currentTarget.classList.remove('show');
+});
+document.getElementById('resetProgressBtn').addEventListener('click', handleResetProgress);
+document.getElementById('modalShare').addEventListener('click', shareWin);
+promptOverlay.addEventListener('click', (e) => { if(e.target === promptOverlay) promptOverlay.classList.remove('show'); });
+
 refreshTopBar();
+updateDailyBadge();
 if(gridOn) document.getElementById('gridBtn').classList.add('active');
 if(currentDifficulty){
   const d = DIFFICULTIES[currentDifficulty];
