@@ -113,28 +113,20 @@
   .icon-btn:hover{ background:rgba(0,0,0,0.05); color:var(--ink); }
   .icon-btn:active{ transform: scale(0.93); }
 
-  .board-scroll{
-    width:100%; max-width:520px;
-    max-height: 78vh;
-    overflow:auto;
+  .board-wrap{
+    /* Width is the smaller of: parent width, desktop cap, and the width
+       that would let the board's height fit the viewport. aspect-ratio
+       then drives height. --board-reserve is the room left above + below
+       for the top bar, header, timer, and controls. */
+    --board-reserve: 280px;
+    width: min(100%, 520px,
+               calc((100vh - var(--board-reserve)) * var(--board-w, 14) / var(--board-h, 22)));
+    aspect-ratio: var(--board-w, 14) / var(--board-h, 22);
+    padding:8px; position:relative;
     border-radius:14px;
     background:var(--panel);
     border:1px solid var(--line);
     box-shadow: 0 6px 20px -10px rgba(26,34,56,0.15);
-    /* hide scrollbars when zoom = 1 — they reappear when content overflows. */
-    -ms-overflow-style: none; scrollbar-width: thin;
-  }
-  .board-scroll::-webkit-scrollbar{ width:6px; height:6px; }
-  .board-scroll::-webkit-scrollbar-thumb{ background: rgba(26,34,56,0.2); border-radius:999px; }
-  .board-zoomer{
-    width:100%;       /* zoom > 1 makes this wider → scroll bars */
-    transition: width 0.18s ease;
-  }
-  .board-wrap{
-    width:100%;
-    aspect-ratio: var(--board-ratio, 14 / 22);
-    padding:8px;
-    position:relative;
   }
   svg.board{ width:100%; height:100%; display:block; overflow:visible; }
   .tut-finger{
@@ -182,7 +174,7 @@
 
   .controls{
     width:100%; max-width:520px; margin-top:16px;
-    display:flex; gap:14px; align-items:center;
+    display:flex; gap:14px; align-items:center; justify-content:center;
   }
   .tools{
     display:flex; gap:10px;
@@ -221,20 +213,6 @@
     line-height:1;
   }
   .tool-btn .badge.zero{ display:none; }
-  .zooms{
-    margin-left:auto;
-    display:flex; flex-direction:column; gap:6px;
-  }
-  .zooms button{
-    width:32px; height:32px; border-radius:999px;
-    background:transparent; border:none; color:var(--dim);
-    font-size:16px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition: all 0.15s ease;
-  }
-  .zooms button:hover{ background:rgba(0,0,0,0.05); color:var(--ink); }
-  .zooms button:active{ transform: scale(0.9); }
-
   .overlay{
     position:fixed; inset:0;
     background:rgba(26,34,56,0.55); backdrop-filter:blur(8px);
@@ -849,12 +827,8 @@
   <span class="clock-icon">⏱</span><span id="timerText">0s</span>
 </div>
 
-<div class="board-scroll" id="boardScroll">
-  <div class="board-zoomer" id="boardZoomer">
-    <div class="board-wrap">
-      <svg class="board" id="board" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
-    </div>
-  </div>
+<div class="board-wrap">
+  <svg class="board" id="board" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
 </div>
 
 <div class="controls">
@@ -872,10 +846,6 @@
       <span class="daily-streak" id="dailyStreak" style="display:none">0</span>
     </button>
     <button class="tool-btn" id="newBtn" aria-label="New puzzle">↻</button>
-  </div>
-  <div class="zooms">
-    <button id="zoomInBtn" aria-label="Zoom in">＋</button>
-    <button id="zoomOutBtn" aria-label="Zoom out">−</button>
   </div>
 </div>
 
@@ -1067,10 +1037,9 @@ function applyGridSize(w, h){
   // function works even when called during module init, before the
   // module-level `boardEl` const is initialized (TDZ).
   const _board = document.getElementById('board');
-  if(_board){
-    _board.setAttribute('viewBox', `0 0 ${VIEW_W} ${VIEW_H}`);
-    _board.parentElement.style.setProperty('--board-ratio', `${GRID_W} / ${GRID_H}`);
-  }
+  if(_board) _board.setAttribute('viewBox', `0 0 ${VIEW_W} ${VIEW_H}`);
+  document.documentElement.style.setProperty('--board-w', GRID_W);
+  document.documentElement.style.setProperty('--board-h', GRID_H);
 }
 applyGridSize(GRID_W, GRID_H);
 
@@ -2491,11 +2460,6 @@ function eraseArrow(piece){
   }, 360);
   updateHUD();
 }
-let zoom = 1;
-function applyZoom(){
-  document.getElementById('boardZoomer').style.width = (zoom * 100) + '%';
-}
-
 /* loadLevel — the silhouette is always a portrait rectangle of GRID_W ×
    GRID_H; variety comes from the random tiling, not from picking shapes.
    The reuseShape parameter is kept for API compatibility but only the
@@ -2648,8 +2612,6 @@ document.getElementById('newBtn').addEventListener('click', () => {
   dailyMode = false;
   tryStartLevel(currentLevel + 1, false);
 });
-document.getElementById('zoomInBtn').addEventListener('click', () => { zoom = Math.min(2, zoom + 0.15); applyZoom(); });
-document.getElementById('zoomOutBtn').addEventListener('click', () => { zoom = Math.max(0.6, zoom - 0.15); applyZoom(); });
 function retryDaily(){
   // Free re-attempt of today's daily — same seed, no energy charge.
   const realRandom = Math.random;
