@@ -977,8 +977,9 @@ button.corner-pill:active { transform: scale(0.96); }
   background: linear-gradient(135deg, #fef3c7, #fde68a);
   filter: grayscale(0.6);
 }
+.lvl-card.band-tiny:not(.boss):not(.locked) { background: #f1f8ff; }
 .lvl-card.band-easy:not(.boss):not(.locked) { background: #eafff7; }
-.lvl-card.band-medium:not(.boss):not(.locked) { background: #eef0f8; }
+.lvl-card.band-medium:not(.boss):not(.locked) { background: #fff8e6; }
 .lvl-card.band-hard:not(.boss):not(.locked) { background: #fff1f1; }
 .lvl-card.band-xl:not(.boss):not(.locked) { background: linear-gradient(135deg, #f0e8ff, #e7dbff); }
 

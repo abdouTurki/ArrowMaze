@@ -1,4 +1,4 @@
-export type Band = 'easy' | 'medium' | 'hard' | 'xl';
+export type Band = 'tiny' | 'easy' | 'medium' | 'hard' | 'xl';
 
 export interface LevelGrid {
   w: number;
@@ -7,24 +7,53 @@ export interface LevelGrid {
   isBoss: boolean;
 }
 
+const MIN_W = 4;
+const MAX_W = 18;
+const MAX_H = 28;
+const LEVELS_PER_STEP = 5;
+
 /**
- * Grid size for a given level number. Difficulty scales with level:
- *   1–9   easy   (8×12)
- *   10–19 medium (11×17)
- *   20–29 hard   (14×22)
- *   30+   XL     (17×27)
- * Every 10th level (10, 20, 30, …) is a boss — visually flagged on the map.
+ * Grid size for a given level number. Smooth ramp: 1 column added every 5
+ * levels (height tracks at 1.5×); caps at 18×28. Every 10th level is a boss
+ * (visually flagged on the map).
+ *
+ *   L1–5    4×6   (tiny tutorial scale)
+ *   L6–10   5×8
+ *   L11–15  6×9
+ *   L16–20  7×11
+ *   L21–25  8×12  (≈ old "easy")
+ *   L26–30  9×14
+ *   L31–35  10×15
+ *   L36–40  11×17 (≈ old "medium")
+ *   L41–45  12×18
+ *   L46–50  13×20
+ *   L51–55  14×21 (≈ old "hard")
+ *   L56–60  15×23
+ *   L61–65  16×24
+ *   L66–70  17×26
+ *   L71+    18×27 (cap)
+ *
+ * ~70 levels of clear progression before the cap.
  */
 export function getLevelGrid(level: number): LevelGrid {
+  const w = Math.min(MAX_W, MIN_W + Math.floor((level - 1) / LEVELS_PER_STEP));
+  const h = Math.min(MAX_H, Math.round(w * 1.5));
   const isBoss = level > 0 && level % 10 === 0;
-  if (level <= 9) return { w: 8, h: 12, band: 'easy', isBoss };
-  if (level <= 19) return { w: 11, h: 17, band: 'medium', isBoss };
-  if (level <= 29) return { w: 14, h: 22, band: 'hard', isBoss };
-  return { w: 17, h: 27, band: 'xl', isBoss };
+  return { w, h, band: getBand(w), isBoss };
+}
+
+function getBand(w: number): Band {
+  if (w <= 6) return 'tiny';
+  if (w <= 9) return 'easy';
+  if (w <= 12) return 'medium';
+  if (w <= 15) return 'hard';
+  return 'xl';
 }
 
 export function getBandLabel(band: Band): string {
   switch (band) {
+    case 'tiny':
+      return 'Tiny';
     case 'easy':
       return 'Easy';
     case 'medium':

@@ -6,6 +6,8 @@ import { escapePathOwnClear } from '../src/engine/escape.js';
 import { mulberry32 } from '../src/engine/prng.js';
 
 const GRIDS = [
+  { key: 'tiny-4x6', w: 4, h: 6 },
+  { key: 'tiny-5x8', w: 5, h: 8 },
   { key: 'easy', w: 8, h: 12 },
   { key: 'medium', w: 11, h: 17 },
   { key: 'hard', w: 14, h: 22 },
