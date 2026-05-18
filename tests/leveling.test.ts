@@ -2,68 +2,73 @@ import { describe, it, expect } from 'vitest';
 import { getLevelGrid, getBandLabel, computeStars, getParTimeMs } from '../src/leveling.js';
 
 describe('getLevelGrid', () => {
-  it('levels 1-5 are tiny (4x6)', () => {
-    for (const l of [1, 2, 3, 4, 5]) {
+  it('starts at 4x6 on level 1', () => {
+    expect(getLevelGrid(1)).toMatchObject({ w: 4, h: 6, band: 'tiny' });
+  });
+
+  it('matches the documented per-level table for levels 1-10', () => {
+    expect(getLevelGrid(1)).toMatchObject({ w: 4, h: 6 });
+    expect(getLevelGrid(2)).toMatchObject({ w: 4, h: 7 });
+    expect(getLevelGrid(3)).toMatchObject({ w: 5, h: 7 });
+    expect(getLevelGrid(4)).toMatchObject({ w: 5, h: 8 });
+    expect(getLevelGrid(5)).toMatchObject({ w: 6, h: 8 });
+    expect(getLevelGrid(6)).toMatchObject({ w: 6, h: 9 });
+    expect(getLevelGrid(7)).toMatchObject({ w: 7, h: 9 });
+    expect(getLevelGrid(8)).toMatchObject({ w: 7, h: 10 });
+    expect(getLevelGrid(9)).toMatchObject({ w: 8, h: 10 });
+    expect(getLevelGrid(10)).toMatchObject({ w: 8, h: 11 });
+  });
+
+  it('every non-capped level grows by exactly +1 in exactly one dimension', () => {
+    let prev = getLevelGrid(1);
+    for (let l = 2; l <= 36; l++) {
       const g = getLevelGrid(l);
-      expect(g.w).toBe(4);
-      expect(g.h).toBe(6);
-      expect(g.band).toBe('tiny');
+      const dw = g.w - prev.w;
+      const dh = g.h - prev.h;
+      expect(dw + dh, `level ${l} grew by ${dw}+${dh}`).toBe(1);
+      expect(dw === 0 || dh === 0).toBe(true);
+      prev = g;
     }
   });
 
-  it('levels 6-10 step to 5x8', () => {
-    for (const l of [6, 7, 8, 9, 10]) {
+  it('total cell count strictly increases until the cap', () => {
+    let lastCells = 0;
+    for (let l = 1; l <= 36; l++) {
       const g = getLevelGrid(l);
-      expect(g.w).toBe(5);
-      expect(g.h).toBe(8);
-      expect(g.band).toBe('tiny');
+      const cells = g.w * g.h;
+      expect(cells, `level ${l} did not grow`).toBeGreaterThan(lastCells);
+      lastCells = cells;
     }
   });
 
-  it('levels 11-15 step to 6x9', () => {
-    expect(getLevelGrid(11)).toMatchObject({ w: 6, h: 9, band: 'tiny' });
-    expect(getLevelGrid(15)).toMatchObject({ w: 6, h: 9, band: 'tiny' });
-  });
-
-  it('levels 16-20 step to 7x11 (easy band starts)', () => {
-    expect(getLevelGrid(16)).toMatchObject({ w: 7, h: 11, band: 'easy' });
-    expect(getLevelGrid(20)).toMatchObject({ w: 7, h: 11, band: 'easy' });
-  });
-
-  it('level 21-25 is 8x12 (old "easy" size)', () => {
-    expect(getLevelGrid(21)).toMatchObject({ w: 8, h: 12, band: 'easy' });
-    expect(getLevelGrid(25)).toMatchObject({ w: 8, h: 12, band: 'easy' });
-  });
-
-  it('level 36-40 is 11x17 (old "medium" size)', () => {
-    expect(getLevelGrid(36)).toMatchObject({ w: 11, h: 17, band: 'medium' });
-    expect(getLevelGrid(40)).toMatchObject({ w: 11, h: 17, band: 'medium' });
-  });
-
-  it('level 51-55 is 14x21 (≈ old "hard" size)', () => {
-    expect(getLevelGrid(51)).toMatchObject({ w: 14, h: 21, band: 'hard' });
-    expect(getLevelGrid(55)).toMatchObject({ w: 14, h: 21, band: 'hard' });
-  });
-
-  it('level 71+ caps at 18x27 (xl)', () => {
-    for (const l of [71, 100, 500]) {
-      const g = getLevelGrid(l);
-      expect(g.w).toBe(18);
-      expect(g.h).toBe(27);
-      expect(g.band).toBe('xl');
+  it('width caps at 18 by level 29', () => {
+    expect(getLevelGrid(29).w).toBe(18);
+    for (let l = 29; l <= 100; l++) {
+      expect(getLevelGrid(l).w).toBeLessThanOrEqual(18);
     }
   });
 
-  it('grid grows monotonically with level', () => {
-    let lastW = 0;
-    for (let l = 1; l <= 80; l++) {
-      const g = getLevelGrid(l);
-      expect(g.w).toBeGreaterThanOrEqual(lastW);
-      lastW = g.w;
+  it('hits the 18x27 cap at level 36 and stays there', () => {
+    expect(getLevelGrid(36)).toMatchObject({ w: 18, h: 27 });
+    for (const l of [37, 50, 100, 500]) {
+      expect(getLevelGrid(l)).toMatchObject({ w: 18, h: 27 });
     }
   });
 
-  it('every 10th level is a boss', () => {
+  it('bands cover the expected level ranges', () => {
+    expect(getLevelGrid(1).band).toBe('tiny');
+    expect(getLevelGrid(6).band).toBe('tiny'); // w=6
+    expect(getLevelGrid(7).band).toBe('easy'); // w=7
+    expect(getLevelGrid(12).band).toBe('easy'); // w=9
+    expect(getLevelGrid(13).band).toBe('medium'); // w=10
+    expect(getLevelGrid(18).band).toBe('medium'); // w=12
+    expect(getLevelGrid(19).band).toBe('hard'); // w=13
+    expect(getLevelGrid(24).band).toBe('hard'); // w=15
+    expect(getLevelGrid(25).band).toBe('xl'); // w=16
+    expect(getLevelGrid(100).band).toBe('xl');
+  });
+
+  it('every 10th level is flagged as a boss', () => {
     for (const l of [10, 20, 30, 40, 50, 100]) {
       expect(getLevelGrid(l).isBoss).toBe(true);
     }
