@@ -29,10 +29,10 @@ export function setGeometry(w: number, h: number): void {
   STROKE = CELL * 0.22;
   HEAD_LEN = CELL * 0.55;
   HEAD_HALF = CELL * 0.32;
+  // Cap walk length to the grid — a 4×6 board can't host a 10-step walk.
   const maxDim = Math.max(w, h);
-  if (maxDim >= 20) MAX_WALK = 18;
-  else if (maxDim >= 14) MAX_WALK = 14;
-  else MAX_WALK = 10;
+  const cap = maxDim >= 20 ? 18 : maxDim >= 14 ? 14 : 10;
+  MAX_WALK = Math.max(3, Math.min(cap, maxDim - 1));
 }
 
 export const inBounds = (x: number, y: number): boolean =>
