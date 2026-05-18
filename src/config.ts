@@ -1,17 +1,7 @@
-import type {
-  AchievementDef,
-  AdRewards,
-  Difficulty,
-  DifficultyKey,
-  ShopPrices,
-  StreakBonus,
-} from './types.js';
+import type { AchievementDef, AdRewards, ShopPrices, StreakBonus } from './types.js';
 
-export const DIFFICULTIES: Record<DifficultyKey, Difficulty> = {
-  easy: { w: 8, h: 12, label: 'Easy' },
-  medium: { w: 11, h: 17, label: 'Medium' },
-  hard: { w: 14, h: 22, label: 'Hard' },
-};
+/** Grid used for the daily challenge. Fixed; independent of level progression. */
+export const DAILY_GRID = { w: 11, h: 17 } as const;
 
 export const HINTS_PER_LEVEL = 2;
 export const ERASERS_PER_LEVEL = 1;

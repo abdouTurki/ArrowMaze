@@ -23,14 +23,6 @@ export interface PieceOption {
   dir: Direction;
 }
 
-export type DifficultyKey = 'easy' | 'medium' | 'hard';
-
-export interface Difficulty {
-  w: number;
-  h: number;
-  label: string;
-}
-
 export interface AchievementDef {
   id: string;
   icon: string;
@@ -81,7 +73,8 @@ export type StreakBonus = Record<number, number>;
 export interface PersistedState {
   bestScores: Record<string, number>;
   currentLevel: number;
-  currentDifficulty: DifficultyKey | null;
+  maxLevelUnlocked: number;
+  levelStars: Record<number, number>;
   settings: Settings;
   coins: number;
   energy: number;

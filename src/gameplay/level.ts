@@ -1,13 +1,14 @@
 import { state, savePersisted } from '../state.js';
-import { HINTS_PER_LEVEL, ERASERS_PER_LEVEL } from '../config.js';
+import { HINTS_PER_LEVEL, ERASERS_PER_LEVEL, DAILY_GRID } from '../config.js';
 import { GRID_H, GRID_W, VIEW_H, VIEW_W } from '../engine/geom.js';
 import { tileSilhouette, makeRectangleRows } from '../engine/tiler.js';
 import { boardEl, levelEl } from '../dom.js';
-import { renderPieces } from '../render/board.js';
+import { applyGridSizeToDOM, renderPieces } from '../render/board.js';
 import { renderHearts, updateHUD } from '../render/hud.js';
 import { maybeShowTutorialPointer } from '../render/tutorial.js';
 import { maybeShowToolTip } from '../render/toast.js';
 import { refillEnergyFromClock, spendEnergy, showOutOfEnergyPrompt } from '../meta/energy.js';
+import { getLevelGrid } from '../leveling.js';
 import { startTimer } from './timer.js';
 import { updateHintBtn, updateEraserBtn } from './tools.js';
 import { pathIsClear } from './play.js';
@@ -34,7 +35,13 @@ export function showLoading(): void {
  */
 export function loadLevel(level: number): void {
   if (level < 1) level = 1;
-  if (!state.dailyMode) state.currentLevel = level;
+  if (!state.dailyMode) {
+    state.currentLevel = level;
+    const grid = getLevelGrid(level);
+    applyGridSizeToDOM(grid.w, grid.h);
+  } else {
+    applyGridSizeToDOM(DAILY_GRID.w, DAILY_GRID.h);
+  }
   state.levelToken++;
   if (state.failTimeout !== null) {
     clearTimeout(state.failTimeout);

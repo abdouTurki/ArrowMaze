@@ -57,6 +57,7 @@
       ✎<span class="badge zero" id="eraserBadge">1</span>
     </button>
     <button class="tool-btn" id="gridBtn" aria-label="Grid">#</button>
+    <button class="tool-btn" id="mapBtn" aria-label="Level map">🗺</button>
     <button class="tool-btn daily-btn" id="dailyBtn" aria-label="Daily challenge">
       ☀
       <span class="daily-dot" id="dailyDot"></span>
@@ -66,34 +67,12 @@
   </div>
 </div>
 
-<div class="overlay" id="diffOverlay">
-  <div class="modal">
-    <div class="badge">▤</div>
-    <h2>Choose Difficulty</h2>
-    <p>Larger boards have more arrows and tighter packing. You can change this anytime.</p>
-    <div class="diff-options">
-      <button data-diff="easy" class="diff-btn easy">
-        <div>
-          <div class="diff-label">Easy</div>
-          <div class="diff-sub">8 × 12 · ~25 arrows</div>
-        </div>
-        <span class="diff-arrow">→</span>
-      </button>
-      <button data-diff="medium" class="diff-btn medium">
-        <div>
-          <div class="diff-label">Medium</div>
-          <div class="diff-sub">11 × 17 · ~45 arrows</div>
-        </div>
-        <span class="diff-arrow">→</span>
-      </button>
-      <button data-diff="hard" class="diff-btn hard">
-        <div>
-          <div class="diff-label">Hard</div>
-          <div class="diff-sub">14 × 22 · ~65 arrows</div>
-        </div>
-        <span class="diff-arrow">→</span>
-      </button>
-    </div>
+<div class="overlay" id="levelMapOverlay">
+  <div class="modal level-map" style="position:relative">
+    <button class="modal-close" id="levelMapClose" aria-label="Close">×</button>
+    <h2 class="settings-title">Level Map</h2>
+    <div class="lvl-summary" id="levelMapSummary">Unlocked: 1 · Stars: 0</div>
+    <div class="lvl-grid" id="levelMapList"></div>
   </div>
 </div>
 
@@ -143,7 +122,6 @@
       </div>
     </div>
     <button class="settings-btn" id="achievementsBtn">Achievements</button>
-    <button class="settings-btn" id="changeDifficultyBtn">Change Difficulty</button>
     <button class="settings-btn danger" id="resetProgressBtn">Reset Progress</button>
   </div>
 </div>
@@ -201,6 +179,7 @@
       <div><div class="num" id="modalPar">0</div><div class="lbl">Arrows</div></div>
       <div><div class="num" id="modalLives">3</div><div class="lbl">Lives</div></div>
     </div>
+    <div class="modal-stars" id="modalStars" style="display:none"></div>
     <div class="modal-reward" id="modalReward" style="display:none">
       <span class="coin-stack"></span><span>+<span id="modalRewardAmount">10</span></span>
     </div>
