@@ -7,6 +7,7 @@ import { playWinWave, spawnConfetti } from '../render/winWave.js';
 import { refreshTopBar, bumpCoinPill, renderHearts } from '../render/hud.js';
 import { showToast } from '../render/toast.js';
 import { todayKey } from '../engine/prng.js';
+import { computeStars } from '../leveling.js';
 import { stopTimer, startTimer } from './timer.js';
 import { bestKey } from './hearts.js';
 import { checkAchievements } from '../meta/achievements.js';
@@ -32,6 +33,18 @@ export function checkWin(): void {
   state.levelsCleared++;
   state.flawlessStreak = flawless ? state.flawlessStreak + 1 : 0;
   const durationMs = state.levelStartTimeMs ? Date.now() - state.levelStartTimeMs : 0;
+
+  // 3-star rating per level (procedural mode: best-ever stars at this level number).
+  let newStars = 0;
+  let prevStars = 0;
+  if (!state.dailyMode) {
+    newStars = computeStars(true, state.usedHintThisLevel, durationMs, par);
+    prevStars = state.levelStars[state.currentLevel] || 0;
+    if (newStars > prevStars) state.levelStars[state.currentLevel] = newStars;
+    if (state.currentLevel + 1 > state.maxLevelUnlocked) {
+      state.maxLevelUnlocked = state.currentLevel + 1;
+    }
+  }
 
   if (state.dailyMode) {
     const today = todayKey();
@@ -67,10 +80,15 @@ export function checkWin(): void {
     durationMs,
     usedHint: state.usedHintThisLevel,
   });
-  setTimeout(() => showWinModal(isNewBest, reward), 900);
+  setTimeout(() => showWinModal(isNewBest, reward, newStars, prevStars), 900);
 }
 
-export function showWinModal(isNewBest: boolean, reward: number): void {
+export function showWinModal(
+  isNewBest: boolean,
+  reward: number,
+  stars = 0,
+  prevStars = 0,
+): void {
   const modal = document.getElementById('modal')!;
   modal.classList.remove('fail');
   modal.classList.add('win');
@@ -93,6 +111,7 @@ export function showWinModal(isNewBest: boolean, reward: number): void {
   document.getElementById('modalMoves')!.textContent = String(state.moves);
   document.getElementById('modalPar')!.textContent = String(par);
   document.getElementById('modalLives')!.textContent = String(state.lives);
+  renderModalStars(stars, prevStars);
   const rewardWrap = document.getElementById('modalReward') as HTMLElement;
   if (reward > 0) {
     rewardWrap.style.display = '';
@@ -191,6 +210,33 @@ export function showFailModal(): void {
   document.getElementById('modalNext')!.textContent = 'Try again';
   document.getElementById('modalConfetti')!.innerHTML = '';
   overlay.classList.add('show');
+}
+
+function renderModalStars(stars: number, prevStars: number): void {
+  const host = document.getElementById('modalStars');
+  if (!host) return;
+  if (state.dailyMode || stars === 0) {
+    host.innerHTML = '';
+    host.style.display = 'none';
+    return;
+  }
+  host.style.display = '';
+  host.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const lit = i < stars;
+    const newlyLit = i >= prevStars && i < stars;
+    const s = document.createElement('span');
+    s.className = 'modal-star' + (lit ? ' lit' : '') + (newlyLit ? ' new' : '');
+    s.style.animationDelay = `${i * 180}ms`;
+    s.textContent = lit ? '★' : '☆';
+    host.appendChild(s);
+  }
+  if (stars > prevStars) {
+    const tag = document.createElement('div');
+    tag.className = 'modal-stars-label';
+    tag.textContent = prevStars === 0 ? 'New stars!' : `+${stars - prevStars} new star${stars - prevStars > 1 ? 's' : ''}!`;
+    host.appendChild(tag);
+  }
 }
 
 export function revivePlayer(): void {

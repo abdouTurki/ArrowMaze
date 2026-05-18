@@ -1,6 +1,6 @@
 import { state, loadPersisted } from './state.js';
-import { DIFFICULTIES, MAX_ENERGY } from './config.js';
-import { applyGridSizeToDOM, setPieceClickHandler } from './render/board.js';
+import { MAX_ENERGY } from './config.js';
+import { setPieceClickHandler } from './render/board.js';
 import { refreshTopBar, updateEnergyTimer } from './render/hud.js';
 import { handlePieceClick, setOnWinCheck } from './gameplay/play.js';
 import { setOnLostAllLives } from './gameplay/hearts.js';
@@ -10,7 +10,6 @@ import { checkWin, showFailModal } from './gameplay/win.js';
 import { installVisibilityPauseHandler } from './gameplay/timer.js';
 import { openShop, closeShop } from './meta/shop.js';
 import { showSettings, wireSettings } from './meta/settings.js';
-import { showDiffModal, hideDiffModal, chooseDifficulty } from './meta/difficulty.js';
 import {
   startDailyChallenge,
   retryDaily,
@@ -22,6 +21,7 @@ import { showOutOfEnergyPrompt } from './meta/energy.js';
 import { showUnlockModal } from './meta/unlock.js';
 import { shareWin } from './meta/share.js';
 import { handleResetProgress } from './meta/reset.js';
+import { openLevelMap, closeLevelMap } from './meta/levelMap.js';
 
 loadPersisted();
 
@@ -44,20 +44,9 @@ document.getElementById('newBtn')!.addEventListener('click', () => {
   state.dailyMode = false;
   tryStartLevel(state.currentLevel + 1);
 });
-
-document.querySelectorAll<HTMLElement>('.diff-btn').forEach((b) => {
-  b.addEventListener('click', () => chooseDifficulty(b.dataset.diff!));
-});
-const diffOverlay = document.getElementById('diffOverlay')!;
-diffOverlay.addEventListener('click', (e) => {
-  if (e.target === diffOverlay && state.currentDifficulty) hideDiffModal();
-});
+document.getElementById('mapBtn')!.addEventListener('click', openLevelMap);
 
 wireSettings();
-document.getElementById('changeDifficultyBtn')!.addEventListener('click', () => {
-  document.getElementById('settingsOverlay')!.classList.remove('show');
-  showDiffModal();
-});
 
 document.getElementById('modalReset')!.addEventListener('click', () => {
   document.getElementById('overlay')!.classList.remove('show');
@@ -115,6 +104,14 @@ achOverlay.addEventListener('click', (e) => {
   if ((e.target as HTMLElement).id === 'achievementsOverlay')
     (e.currentTarget as HTMLElement).classList.remove('show');
 });
+
+// Level map close + outside-click dismiss
+document.getElementById('levelMapClose')!.addEventListener('click', closeLevelMap);
+const mapOverlay = document.getElementById('levelMapOverlay')!;
+mapOverlay.addEventListener('click', (e) => {
+  if (e.target === mapOverlay) closeLevelMap();
+});
+
 document.getElementById('resetProgressBtn')!.addEventListener('click', handleResetProgress);
 document.getElementById('modalShare')!.addEventListener('click', shareWin);
 const promptOverlay = document.getElementById('promptOverlay')!;
@@ -126,10 +123,4 @@ promptOverlay.addEventListener('click', (e) => {
 refreshTopBar();
 updateDailyBadge();
 if (state.gridOn) document.getElementById('gridBtn')!.classList.add('active');
-if (state.currentDifficulty) {
-  const d = DIFFICULTIES[state.currentDifficulty];
-  applyGridSizeToDOM(d.w, d.h);
-  loadLevel(state.currentLevel);
-} else {
-  showDiffModal();
-}
+loadLevel(state.currentLevel);

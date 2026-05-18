@@ -4,8 +4,12 @@ import { tileSilhouette, makeRectangleRows } from '../src/engine/tiler.js';
 import { buildBlockerDAG, dagHasCycle } from '../src/engine/dag.js';
 import { escapePathOwnClear } from '../src/engine/escape.js';
 import { mulberry32 } from '../src/engine/prng.js';
-import { DIFFICULTIES } from '../src/config.js';
-import type { DifficultyKey } from '../src/types.js';
+
+const GRIDS = [
+  { key: 'easy', w: 8, h: 12 },
+  { key: 'medium', w: 11, h: 17 },
+  { key: 'hard', w: 14, h: 22 },
+] as const;
 
 const realRandom = Math.random;
 
@@ -32,10 +36,8 @@ describe('tileSilhouette', () => {
     expect(layout!.length).toBeGreaterThan(0);
   });
 
-  const difficulties: DifficultyKey[] = ['easy', 'medium', 'hard'];
-  for (const key of difficulties) {
-    const { w, h } = DIFFICULTIES[key];
-    describe(`difficulty ${key} (${w}x${h})`, () => {
+  for (const { key, w, h } of GRIDS) {
+    describe(`grid ${key} (${w}x${h})`, () => {
       it('layout is always acyclic over 30 seeded runs', () => {
         let failures = 0;
         for (let seed = 1; seed <= 30; seed++) {

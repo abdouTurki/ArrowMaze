@@ -1,5 +1,5 @@
-import { HINTS_PER_LEVEL, ERASERS_PER_LEVEL, MAX_ENERGY, DIFFICULTIES } from './config.js';
-import type { DifficultyKey, GameState, PersistedState } from './types.js';
+import { HINTS_PER_LEVEL, ERASERS_PER_LEVEL, MAX_ENERGY } from './config.js';
+import type { GameState, PersistedState } from './types.js';
 
 export const STORAGE_KEY = 'arrowmaze.v7.state';
 export const LEGACY_KEY = 'arrowmaze.v6.state';
@@ -7,7 +7,8 @@ export const LEGACY_KEY = 'arrowmaze.v6.state';
 export const state: GameState = {
   bestScores: {},
   currentLevel: 1,
-  currentDifficulty: null,
+  maxLevelUnlocked: 1,
+  levelStars: {},
   settings: { bgm: false, sfx: true, sensitivity: 50 },
   coins: 0,
   energy: MAX_ENERGY,
@@ -44,7 +45,8 @@ export const state: GameState = {
 interface RawPersisted {
   bestScores?: Record<string, number>;
   currentLevel?: number;
-  difficulty?: string;
+  maxLevelUnlocked?: number;
+  levelStars?: Record<number, number>;
   settings?: Partial<PersistedState['settings']>;
   coins?: number;
   energy?: number;
@@ -59,6 +61,8 @@ interface RawPersisted {
   levelsCleared?: number;
   flawlessStreak?: number;
   spentCoinsTotal?: number;
+  /** Vestigial v7 field — read but no longer used. */
+  difficulty?: string;
 }
 
 export function loadPersisted(): void {
@@ -78,9 +82,14 @@ export function loadPersisted(): void {
 
   if (p.bestScores) state.bestScores = p.bestScores;
   if (typeof p.currentLevel === 'number') state.currentLevel = p.currentLevel;
-  if (p.difficulty && (DIFFICULTIES as Record<string, unknown>)[p.difficulty]) {
-    state.currentDifficulty = p.difficulty as DifficultyKey;
+  if (typeof p.maxLevelUnlocked === 'number') {
+    state.maxLevelUnlocked = p.maxLevelUnlocked;
+  } else if (typeof p.currentLevel === 'number') {
+    // Migration: pre-Tier1 saves had no maxLevelUnlocked. Treat current level as
+    // the high-water mark so existing players don't lose progress.
+    state.maxLevelUnlocked = Math.max(1, p.currentLevel);
   }
+  state.levelStars = p.levelStars || {};
   state.settings = Object.assign({ bgm: false, sfx: true, sensitivity: 50 }, p.settings || {});
   if (typeof p.coins === 'number') state.coins = p.coins;
   state.energy = p.energy != null ? p.energy : MAX_ENERGY;
@@ -98,8 +107,8 @@ export function loadPersisted(): void {
 }
 
 /**
- * Persist game state. The JSON shape MUST stay byte-identical to v7 — players
- * have saves under `arrowmaze.v7.state`. The state-shape test asserts this.
+ * Persist game state. JSON shape v8 — adds `maxLevelUnlocked` + `levelStars`,
+ * drops `difficulty` (level number now determines grid).
  */
 export function savePersisted(): void {
   try {
@@ -108,7 +117,8 @@ export function savePersisted(): void {
       JSON.stringify({
         bestScores: state.bestScores,
         currentLevel: state.currentLevel,
-        difficulty: state.currentDifficulty,
+        maxLevelUnlocked: state.maxLevelUnlocked,
+        levelStars: state.levelStars,
         settings: state.settings,
         coins: state.coins,
         energy: state.energy,

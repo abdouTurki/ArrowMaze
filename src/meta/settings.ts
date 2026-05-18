@@ -32,10 +32,13 @@ export function wireSettings(): void {
     state.settings.sfx = (e.target as HTMLInputElement).checked;
     savePersisted();
   });
-  document.getElementById('sensitivitySlider')!.addEventListener('input', (e) => {
-    const slider = e.target as HTMLInputElement;
-    state.settings.sensitivity = +slider.value;
-    slider.style.background = `linear-gradient(to right, var(--good) 0 ${state.settings.sensitivity}%, #d0d3e0 ${state.settings.sensitivity}% 100%)`;
-    savePersisted();
-  });
+  const slider = document.getElementById('sensitivitySlider');
+  if (slider) {
+    slider.addEventListener('input', (e) => {
+      const s = e.target as HTMLInputElement;
+      state.settings.sensitivity = +s.value;
+      s.style.background = `linear-gradient(to right, var(--good) 0 ${state.settings.sensitivity}%, #d0d3e0 ${state.settings.sensitivity}% 100%)`;
+      savePersisted();
+    });
+  }
 }

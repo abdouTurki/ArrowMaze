@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-// Minimal in-memory localStorage shim for node test env.
 class MemoryStorage {
   private store: Record<string, string> = {};
   getItem(k: string): string | null {
@@ -18,13 +17,13 @@ class MemoryStorage {
 }
 (globalThis as unknown as { localStorage?: MemoryStorage }).localStorage = new MemoryStorage();
 
-// Import AFTER localStorage is installed (state.ts touches it on module init? no — but be safe).
 const { state, loadPersisted, savePersisted, STORAGE_KEY } = await import('../src/state.js');
 
 const EXPECTED_PERSISTED_KEYS = [
   'bestScores',
   'currentLevel',
-  'difficulty',
+  'maxLevelUnlocked',
+  'levelStars',
   'settings',
   'coins',
   'energy',
@@ -46,10 +45,11 @@ describe('state-shape', () => {
     (globalThis.localStorage as unknown as MemoryStorage).clear();
   });
 
-  it('savePersisted writes exactly the documented 17 keys in the documented order', () => {
+  it('savePersisted writes exactly the documented 18 keys in the documented order', () => {
     state.bestScores = { '14x22': 12 };
     state.currentLevel = 7;
-    state.currentDifficulty = 'medium';
+    state.maxLevelUnlocked = 8;
+    state.levelStars = { 1: 3, 2: 2, 7: 1 };
     state.settings = { bgm: false, sfx: true, sensitivity: 50 };
     state.coins = 142;
     state.energy = 3;
@@ -74,7 +74,8 @@ describe('state-shape', () => {
   it('save then load round-trip produces equivalent state', () => {
     state.bestScores = { '8x12': 5, '14x22': 21 };
     state.currentLevel = 12;
-    state.currentDifficulty = 'hard';
+    state.maxLevelUnlocked = 13;
+    state.levelStars = { 1: 3, 2: 3, 3: 2, 12: 1 };
     state.settings = { bgm: true, sfx: false, sensitivity: 80 };
     state.coins = 333;
     state.energy = 0;
@@ -96,7 +97,8 @@ describe('state-shape', () => {
     const snapshot = JSON.stringify({
       bestScores: state.bestScores,
       currentLevel: state.currentLevel,
-      difficulty: state.currentDifficulty,
+      maxLevelUnlocked: state.maxLevelUnlocked,
+      levelStars: state.levelStars,
       settings: state.settings,
       coins: state.coins,
       energy: state.energy,
@@ -112,17 +114,18 @@ describe('state-shape', () => {
       spentCoinsTotal: state.spentCoinsTotal,
     });
 
-    // Mutate, then reload from storage.
     state.coins = 0;
     state.currentLevel = 1;
-    state.currentDifficulty = null;
+    state.maxLevelUnlocked = 1;
+    state.levelStars = {};
     state.unlocks = { hint: false, eraser: false };
 
     loadPersisted();
     const reloaded = JSON.stringify({
       bestScores: state.bestScores,
       currentLevel: state.currentLevel,
-      difficulty: state.currentDifficulty,
+      maxLevelUnlocked: state.maxLevelUnlocked,
+      levelStars: state.levelStars,
       settings: state.settings,
       coins: state.coins,
       energy: state.energy,
@@ -140,7 +143,7 @@ describe('state-shape', () => {
     expect(reloaded).toBe(snapshot);
   });
 
-  it('legacy v6 raw JSON loads into state correctly', () => {
+  it('legacy v7 save (with `difficulty` key) loads cleanly with migration', () => {
     const legacy = {
       bestScores: { '8x12': 3 },
       currentLevel: 4,
@@ -160,13 +163,19 @@ describe('state-shape', () => {
       spentCoinsTotal: 0,
       firstPlay: false,
     };
-    (globalThis.localStorage as unknown as MemoryStorage).setItem('arrowmaze.v6.state', JSON.stringify(legacy));
+    (globalThis.localStorage as unknown as MemoryStorage).setItem(
+      'arrowmaze.v7.state',
+      JSON.stringify(legacy),
+    );
     state.currentLevel = 1;
-    state.currentDifficulty = null;
+    state.maxLevelUnlocked = 1;
+    state.levelStars = {};
     loadPersisted();
     expect(state.currentLevel).toBe(4);
-    expect(state.currentDifficulty).toBe('easy');
     expect(state.bestScores).toEqual({ '8x12': 3 });
+    // Migration: pre-Tier1 saves get maxLevelUnlocked = currentLevel.
+    expect(state.maxLevelUnlocked).toBe(4);
+    expect(state.levelStars).toEqual({});
   });
 
   it('savePersisted writes firstPlay: false even when state.firstPlay is true', () => {
@@ -179,11 +188,16 @@ describe('state-shape', () => {
   });
 
   it('unknown localStorage gracefully no-ops via try/catch', () => {
-    // Remove localStorage temporarily
     const saved = globalThis.localStorage;
     (globalThis as unknown as { localStorage?: MemoryStorage }).localStorage = undefined;
     expect(() => savePersisted()).not.toThrow();
     expect(() => loadPersisted()).not.toThrow();
     globalThis.localStorage = saved;
+  });
+
+  it('first-time load (no save) leaves maxLevelUnlocked at default 1', () => {
+    state.maxLevelUnlocked = 1;
+    loadPersisted();
+    expect(state.maxLevelUnlocked).toBe(1);
   });
 });

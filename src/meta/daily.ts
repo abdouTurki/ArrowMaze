@@ -1,13 +1,10 @@
 import { state } from '../state.js';
-import { DIFFICULTIES } from '../config.js';
+import { DAILY_GRID } from '../config.js';
 import { dailySeed, mulberry32, todayKey } from '../engine/prng.js';
 import { applyGridSizeToDOM } from '../render/board.js';
 import { showToast } from '../render/toast.js';
 import { refillEnergyFromClock, spendEnergy, showOutOfEnergyPrompt } from './energy.js';
 import { loadLevel } from '../gameplay/level.js';
-import type { DifficultyKey } from '../types.js';
-
-let savedDifficulty: DifficultyKey | null = null;
 
 export function dailyAvailable(): boolean {
   return state.lastDailyDate !== todayKey();
@@ -29,9 +26,7 @@ export function startDailyChallenge(): void {
   }
   spendEnergy();
   state.dailyMode = true;
-  savedDifficulty = state.currentDifficulty;
-  const d = DIFFICULTIES.medium;
-  applyGridSizeToDOM(d.w, d.h);
+  applyGridSizeToDOM(DAILY_GRID.w, DAILY_GRID.h);
   const realRandom = Math.random;
   Math.random = mulberry32(dailySeed());
   loadLevel(1);
@@ -43,13 +38,6 @@ export function startDailyChallenge(): void {
 
 export function exitDailyMode(): void {
   state.dailyMode = false;
-  if (savedDifficulty && (DIFFICULTIES as Record<string, unknown>)[savedDifficulty]) {
-    const d = DIFFICULTIES[savedDifficulty];
-    if (savedDifficulty !== state.currentDifficulty) {
-      state.currentDifficulty = savedDifficulty;
-      applyGridSizeToDOM(d.w, d.h);
-    }
-  }
   updateDailyBadge();
   loadLevel(state.currentLevel);
 }
