@@ -22,7 +22,9 @@ export function renderLevelMap(): void {
   const summary = document.getElementById('levelMapSummary');
   if (!list) return;
   list.innerHTML = '';
-  const lastShown = Math.max(state.maxLevelUnlocked + 6, 30);
+  // Always show at least 50 levels (or further if the player has progressed).
+  // Locked levels appear with a 🔒 so the player can see what's coming.
+  const lastShown = Math.max(state.maxLevelUnlocked + 10, 50);
   const totalStars = Object.values(state.levelStars).reduce((a, b) => a + b, 0);
   if (summary) {
     summary.textContent = `Unlocked: ${state.maxLevelUnlocked}  ·  Stars: ${totalStars}`;
