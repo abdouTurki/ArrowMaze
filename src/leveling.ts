@@ -7,37 +7,41 @@ export interface LevelGrid {
   isBoss: boolean;
 }
 
-const MIN_W = 4;
+const START_W = 4;
+const START_H = 6;
 const MAX_W = 18;
-const MAX_H = 28;
-const LEVELS_PER_STEP = 5;
+const MAX_H = 27;
 
 /**
- * Grid size for a given level number. Smooth ramp: 1 column added every 5
- * levels (height tracks at 1.5×); caps at 18×28. Every 10th level is a boss
- * (visually flagged on the map).
+ * Grid size for a given level number. Each level adds exactly one cell to
+ * one dimension — alternating height and width — so every level is
+ * genuinely bigger than the previous one. When width caps at 18, the
+ * overflow is redirected to height. Once both cap (level 36+), grids
+ * stay at 18×27.
  *
- *   L1–5    4×6   (tiny tutorial scale)
- *   L6–10   5×8
- *   L11–15  6×9
- *   L16–20  7×11
- *   L21–25  8×12  (≈ old "easy")
- *   L26–30  9×14
- *   L31–35  10×15
- *   L36–40  11×17 (≈ old "medium")
- *   L41–45  12×18
- *   L46–50  13×20
- *   L51–55  14×21 (≈ old "hard")
- *   L56–60  15×23
- *   L61–65  16×24
- *   L66–70  17×26
- *   L71+    18×27 (cap)
+ *   L1   4×6    L11  9×11   L21  14×16   L31  18×22
+ *   L2   4×7    L12  9×12   L22  14×17   L32  18×23
+ *   L3   5×7    L13  10×12  L23  15×17   L33  18×24
+ *   L4   5×8    L14  10×13  L24  15×18   L34  18×25
+ *   L5   6×8    L15  11×13  L25  16×18   L35  18×26
+ *   L6   6×9    L16  11×14  L26  16×19   L36  18×27 (cap)
+ *   L7   7×9    L17  12×14  L27  17×19   L37+ 18×27
+ *   L8   7×10   L18  12×15  L28  17×20
+ *   L9   8×10   L19  13×15  L29  18×20
+ *   L10  8×11   L20  13×16  L30  18×21
  *
- * ~70 levels of clear progression before the cap.
+ * 36 distinct grid sizes before the cap. Every 10th level is a boss —
+ * visually flagged on the map.
  */
 export function getLevelGrid(level: number): LevelGrid {
-  const w = Math.min(MAX_W, MIN_W + Math.floor((level - 1) / LEVELS_PER_STEP));
-  const h = Math.min(MAX_H, Math.round(w * 1.5));
+  const step = Math.max(0, level - 1);
+  let w = START_W + Math.floor(step / 2);
+  let h = START_H + Math.ceil(step / 2);
+  if (w > MAX_W) {
+    h += w - MAX_W;
+    w = MAX_W;
+  }
+  h = Math.min(MAX_H, h);
   const isBoss = level > 0 && level % 10 === 0;
   return { w, h, band: getBand(w), isBoss };
 }
