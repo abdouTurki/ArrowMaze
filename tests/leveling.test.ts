@@ -8,24 +8,24 @@ describe('getLevelGrid', () => {
 
   it('matches the documented per-level table for levels 1-10', () => {
     expect(getLevelGrid(1)).toMatchObject({ w: 4, h: 6 });
-    expect(getLevelGrid(2)).toMatchObject({ w: 4, h: 7 });
-    expect(getLevelGrid(3)).toMatchObject({ w: 5, h: 7 });
-    expect(getLevelGrid(4)).toMatchObject({ w: 5, h: 8 });
-    expect(getLevelGrid(5)).toMatchObject({ w: 6, h: 8 });
-    expect(getLevelGrid(6)).toMatchObject({ w: 6, h: 9 });
-    expect(getLevelGrid(7)).toMatchObject({ w: 7, h: 9 });
-    expect(getLevelGrid(8)).toMatchObject({ w: 7, h: 10 });
-    expect(getLevelGrid(9)).toMatchObject({ w: 8, h: 10 });
-    expect(getLevelGrid(10)).toMatchObject({ w: 8, h: 11 });
+    expect(getLevelGrid(2)).toMatchObject({ w: 4, h: 9 });
+    expect(getLevelGrid(3)).toMatchObject({ w: 7, h: 9 });
+    expect(getLevelGrid(4)).toMatchObject({ w: 7, h: 12 });
+    expect(getLevelGrid(5)).toMatchObject({ w: 10, h: 12 });
+    expect(getLevelGrid(6)).toMatchObject({ w: 10, h: 15 });
+    expect(getLevelGrid(7)).toMatchObject({ w: 13, h: 15 });
+    expect(getLevelGrid(8)).toMatchObject({ w: 13, h: 18 });
+    expect(getLevelGrid(9)).toMatchObject({ w: 16, h: 18 });
+    expect(getLevelGrid(10)).toMatchObject({ w: 16, h: 21 });
   });
 
-  it('every non-capped level grows by exactly +1 in exactly one dimension', () => {
+  it('every non-capped level grows by exactly +3 in exactly one dimension', () => {
     let prev = getLevelGrid(1);
-    for (let l = 2; l <= 36; l++) {
+    for (let l = 2; l <= 10; l++) {
       const g = getLevelGrid(l);
       const dw = g.w - prev.w;
       const dh = g.h - prev.h;
-      expect(dw + dh, `level ${l} grew by ${dw}+${dh}`).toBe(1);
+      expect(dw + dh, `level ${l} grew by ${dw}+${dh}`).toBe(3);
       expect(dw === 0 || dh === 0).toBe(true);
       prev = g;
     }
@@ -33,7 +33,7 @@ describe('getLevelGrid', () => {
 
   it('total cell count strictly increases until the cap', () => {
     let lastCells = 0;
-    for (let l = 1; l <= 36; l++) {
+    for (let l = 1; l <= 13; l++) {
       const g = getLevelGrid(l);
       const cells = g.w * g.h;
       expect(cells, `level ${l} did not grow`).toBeGreaterThan(lastCells);
@@ -41,30 +41,31 @@ describe('getLevelGrid', () => {
     }
   });
 
-  it('width caps at 18 by level 29', () => {
-    expect(getLevelGrid(29).w).toBe(18);
-    for (let l = 29; l <= 100; l++) {
+  it('width caps at 18 by level 11', () => {
+    expect(getLevelGrid(11).w).toBe(18);
+    for (let l = 11; l <= 100; l++) {
       expect(getLevelGrid(l).w).toBeLessThanOrEqual(18);
     }
   });
 
-  it('hits the 18x27 cap at level 36 and stays there', () => {
-    expect(getLevelGrid(36)).toMatchObject({ w: 18, h: 27 });
-    for (const l of [37, 50, 100, 500]) {
+  it('hits the 18x27 cap at level 13 and stays there', () => {
+    expect(getLevelGrid(13)).toMatchObject({ w: 18, h: 27 });
+    for (const l of [14, 25, 50, 100, 500]) {
       expect(getLevelGrid(l)).toMatchObject({ w: 18, h: 27 });
     }
   });
 
   it('bands cover the expected level ranges', () => {
-    expect(getLevelGrid(1).band).toBe('tiny');
-    expect(getLevelGrid(6).band).toBe('tiny'); // w=6
-    expect(getLevelGrid(7).band).toBe('easy'); // w=7
-    expect(getLevelGrid(12).band).toBe('easy'); // w=9
-    expect(getLevelGrid(13).band).toBe('medium'); // w=10
-    expect(getLevelGrid(18).band).toBe('medium'); // w=12
-    expect(getLevelGrid(19).band).toBe('hard'); // w=13
-    expect(getLevelGrid(24).band).toBe('hard'); // w=15
-    expect(getLevelGrid(25).band).toBe('xl'); // w=16
+    // Steps of 3 in width mean band thresholds align to fewer levels.
+    expect(getLevelGrid(1).band).toBe('tiny'); // w=4
+    expect(getLevelGrid(2).band).toBe('tiny'); // w=4
+    expect(getLevelGrid(3).band).toBe('easy'); // w=7
+    expect(getLevelGrid(4).band).toBe('easy'); // w=7
+    expect(getLevelGrid(5).band).toBe('medium'); // w=10
+    expect(getLevelGrid(6).band).toBe('medium'); // w=10
+    expect(getLevelGrid(7).band).toBe('hard'); // w=13
+    expect(getLevelGrid(8).band).toBe('hard'); // w=13
+    expect(getLevelGrid(9).band).toBe('xl'); // w=16
     expect(getLevelGrid(100).band).toBe('xl');
   });
 

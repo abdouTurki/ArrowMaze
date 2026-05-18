@@ -11,32 +11,33 @@ const START_W = 4;
 const START_H = 6;
 const MAX_W = 18;
 const MAX_H = 27;
+/** Cells added to one dimension per level (alternating w / h). */
+const CELLS_PER_STEP = 3;
 
 /**
- * Grid size for a given level number. Each level adds exactly one cell to
- * one dimension — alternating height and width — so every level is
- * genuinely bigger than the previous one. When width caps at 18, the
- * overflow is redirected to height. Once both cap (level 36+), grids
- * stay at 18×27.
+ * Grid size for a given level number. Each level adds CELLS_PER_STEP cells
+ * to one dimension — alternating height (odd-stepped levels) and width
+ * (even-stepped levels) — so every level is meaningfully bigger than the
+ * previous one. When width caps at 18, the overflow redirects to height;
+ * once both cap (level 13+), grids stay at 18×27.
  *
- *   L1   4×6    L11  9×11   L21  14×16   L31  18×22
- *   L2   4×7    L12  9×12   L22  14×17   L32  18×23
- *   L3   5×7    L13  10×12  L23  15×17   L33  18×24
- *   L4   5×8    L14  10×13  L24  15×18   L34  18×25
- *   L5   6×8    L15  11×13  L25  16×18   L35  18×26
- *   L6   6×9    L16  11×14  L26  16×19   L36  18×27 (cap)
- *   L7   7×9    L17  12×14  L27  17×19   L37+ 18×27
- *   L8   7×10   L18  12×15  L28  17×20
- *   L9   8×10   L19  13×15  L29  18×20
- *   L10  8×11   L20  13×16  L30  18×21
+ *   L1   4×6           L11  18×22 (w cap, overflow → h)
+ *   L2   4×9   (h+3)   L12  18×25 (h+3)
+ *   L3   7×9   (w+3)   L13  18×27 (cap)
+ *   L4   7×12  (h+3)   L14+ 18×27
+ *   L5   10×12 (w+3)
+ *   L6   10×15 (h+3)
+ *   L7   13×15 (w+3)
+ *   L8   13×18 (h+3)
+ *   L9   16×18 (w+3)
+ *   L10  16×21 (h+3)  [boss]
  *
- * 36 distinct grid sizes before the cap. Every 10th level is a boss —
- * visually flagged on the map.
+ * Every 10th level is a boss — visually flagged on the map.
  */
 export function getLevelGrid(level: number): LevelGrid {
   const step = Math.max(0, level - 1);
-  let w = START_W + Math.floor(step / 2);
-  let h = START_H + Math.ceil(step / 2);
+  let w = START_W + Math.floor(step / 2) * CELLS_PER_STEP;
+  let h = START_H + Math.ceil(step / 2) * CELLS_PER_STEP;
   if (w > MAX_W) {
     h += w - MAX_W;
     w = MAX_W;
