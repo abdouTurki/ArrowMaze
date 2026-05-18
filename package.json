@@ -1,0 +1,30 @@
+{
+  "name": "arrow-maze",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Arrow Maze — single-player puzzle game",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint 'src/**/*.{ts,js}' 'tests/**/*.ts'",
+    "format": "prettier --write 'src/**/*.{ts,js,css}' 'tests/**/*.ts' 'styles/**/*.css' '*.{md,json,html,js,ts}'"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.12.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5"
+  }
+}
